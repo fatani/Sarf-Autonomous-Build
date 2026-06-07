@@ -1,0 +1,164 @@
+{
+  "@@locale": "en",
+  "appTitle": "Sarf",
+  "@appTitle": {
+    "description": "Application title"
+  },
+  "navCommitments": "Commitments",
+  "navTemplates": "Templates",
+  "navInsights": "Insights",
+  "navSettings": "Settings",
+  "commitmentsTitle": "Commitments",
+  "commitmentsEmptyTitle": "No commitments yet",
+  "commitmentsEmptyBody": "Add your recurring bills and subscriptions to stay on top of what you owe.",
+  "addCommitment": "Add commitment",
+  "editCommitment": "Edit commitment",
+  "deleteCommitment": "Delete commitment",
+  "deleteCommitmentConfirm": "This commitment will be hidden from your list. You can restore it later from archived items.",
+  "nameLabel": "Name",
+  "amountLabel": "Amount",
+  "currencyLabel": "Currency",
+  "billingCycleLabel": "Billing cycle",
+  "nextDueDateLabel": "Next due date",
+  "reminderDaysLabel": "Reminder (days before)",
+  "notesLabel": "Notes",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "restore": "Restore",
+  "archived": "Archived",
+  "showArchived": "Show archived",
+  "hideArchived": "Hide archived",
+  "paused": "Paused",
+  "active": "Active",
+  "pauseCommitment": "Pause",
+  "resumeCommitment": "Resume",
+  "billingCycleMonthly": "Monthly",
+  "billingCycleQuarterly": "Quarterly",
+  "billingCycleYearly": "Yearly",
+  "billingCycleWeekly": "Weekly",
+  "billingCycleOneTime": "One-time",
+  "categoryLabel": "Category",
+  "categoryEntertainment": "Entertainment",
+  "categoryWork": "Work",
+  "categoryEducation": "Education",
+  "categoryTelecom": "Telecom",
+  "categoryUtilities": "Utilities",
+  "categoryStorage": "Storage",
+  "categoryOther": "Other",
+  "templatesTitle": "Service templates",
+  "templatesSubtitle": "Quick-start from common services",
+  "useTemplate": "Use template",
+  "searchTemplates": "Search templates",
+  "insightsTitle": "Insights",
+  "monthlyTotal": "Monthly total",
+  "yearlyProjection": "Yearly projection",
+  "upcomingDues": "Upcoming dues",
+  "dueToday": "Due today",
+  "dueInDays": "Due in {days} days",
+  "@dueInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdue": "Overdue",
+  "byCategory": "By category",
+  "activeCount": "{count} active",
+  "@activeCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "settingsTitle": "Settings",
+  "languageLabel": "Language",
+  "languageEnglish": "English",
+  "languageArabic": "Arabic",
+  "systemDefault": "System default",
+  "notificationsLabel": "Local reminders",
+  "notificationsEnabled": "Enable reminders",
+  "notificationsDisabledHint": "Reminders stay on your device only.",
+  "defaultCurrencyLabel": "Default currency",
+  "legalSection": "Legal",
+  "privacyPolicy": "Privacy policy",
+  "termsOfUse": "Terms of use",
+  "aboutSection": "About",
+  "aboutBody": "Sarf helps you track recurring commitments locally. Your data never leaves your device.",
+  "versionLabel": "Version",
+  "privacyTitle": "Privacy policy",
+  "privacyBody": "Sarf is privacy-first. All commitment data is stored locally on your device in SQLite. We do not collect, transmit, or store your personal data on any server. Local notifications are scheduled on your device only. You can delete the app at any time to remove all data.",
+  "termsTitle": "Terms of use",
+  "termsBody": "Sarf is provided as-is for personal commitment tracking. It is not financial advice. You are responsible for the accuracy of amounts and dates you enter. The app works fully offline and does not connect to banks or third-party services.",
+  "fieldRequired": "This field is required",
+  "invalidAmount": "Enter a valid amount",
+  "noReminder": "No reminder",
+  "reminderDaysOption": "{days} days before",
+  "@reminderDaysOption": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationChannelName": "Commitment reminders",
+  "notificationChannelDescription": "Local reminders for upcoming commitments",
+  "notificationTitle": "Upcoming commitment",
+  "notificationBody": "{name} — {amount} due on {date}",
+  "@notificationBody": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "errorGeneric": "Something went wrong",
+  "retry": "Retry",
+  "dueDate": "Due {date}",
+  "@dueDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "commitmentDetailsTitle": "Commitment details",
+  "edit": "Edit",
+  "mostExpensive": "Top expenses",
+  "viewReport": "View report",
+  "reportsTitle": "Spending report",
+  "reportsSubtitle": "Monthly breakdown by category",
+  "reportPeriod": "Report period",
+  "reportTotal": "Total monthly",
+  "notificationPermissionDenied": "Notification permission was denied. Enable it in system settings to receive reminders.",
+  "trialReminderTitle": "Trial ending soon",
+  "trialReminderBody": "Your Sarf trial ends in {days} days. Review your commitments before it expires.",
+  "@trialReminderBody": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "weeklyDigestTitle": "Weekly digest",
+  "weeklyDigestBody": "{count} payments due this week — {amount} total",
+  "@weeklyDigestBody": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "suggestedDefaultHint": "Suggested default only"
+}
