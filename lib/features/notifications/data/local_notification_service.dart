@@ -122,26 +122,35 @@ class LocalNotificationService {
     final scheduleId = _uuid.v4();
     final tzScheduled = tz.TZDateTime.from(scheduledAt, tz.local);
 
-    await _plugin.zonedSchedule(
-      notificationId,
-      notificationTitle,
-      notificationBody(
-        commitment.name,
-        '${commitment.amount.toStringAsFixed(2)} ${commitment.currency}',
-        DateUtilsSarf.startOfDay(commitment.nextDueDate).toIso8601String().split('T').first,
-      ),
-      tzScheduled,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          AppConstants.notificationChannelId,
-          'Commitment reminders',
-          channelDescription: 'Local reminders for upcoming commitments',
+    try {
+      await _plugin.zonedSchedule(
+        notificationId,
+        notificationTitle,
+        notificationBody(
+          commitment.name,
+          '${commitment.amount.toStringAsFixed(2)} ${commitment.currency}',
+          DateUtilsSarf.startOfDay(commitment.nextDueDate).toIso8601String().split('T').first,
         ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-    );
+        tzScheduled,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            AppConstants.notificationChannelId,
+            'Commitment reminders',
+            channelDescription: 'Local reminders for upcoming commitments',
+          ),
+          iOS: DarwinNotificationDetails(),
+        ),
+        // inexact: Android may delay up to ~15 min — acceptable for subscription reminders
+        // and requires no special permission (avoids exact_alarms_not_permitted on API 31+).
+        androidScheduleMode: AndroidScheduleMode.inexact,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    } catch (e) {
+      // Notification scheduling failed (e.g. permission revoked). Commitment is still saved.
+      // ignore: avoid_print
+      print('[LocalNotificationService] syncCommitmentReminder failed: $e');
+      return;
+    }
 
     await _scheduleRepository.replaceForCommitment(
       commitmentId: commitment.id,
@@ -183,22 +192,27 @@ class LocalNotificationService {
       return;
     }
 
-    await _plugin.zonedSchedule(
-      NotificationIds.trialReminder,
-      title,
-      body(AppConstants.trialReminderDaysBefore),
-      tz.TZDateTime.from(reminderAt, tz.local),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          AppConstants.notificationChannelId,
-          'Commitment reminders',
-          channelDescription: 'Local reminders for upcoming commitments',
+    try {
+      await _plugin.zonedSchedule(
+        NotificationIds.trialReminder,
+        title,
+        body(AppConstants.trialReminderDaysBefore),
+        tz.TZDateTime.from(reminderAt, tz.local),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            AppConstants.notificationChannelId,
+            'Commitment reminders',
+            channelDescription: 'Local reminders for upcoming commitments',
+          ),
+          iOS: DarwinNotificationDetails(),
         ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-    );
+        androidScheduleMode: AndroidScheduleMode.inexact,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    } catch (e) {
+      // ignore: avoid_print
+      print('[LocalNotificationService] syncTrialReminder failed: $e');
+    }
   }
 
   Future<void> syncWeeklyDigest({
@@ -231,22 +245,27 @@ class LocalNotificationService {
 
     final total = upcoming.fold<double>(0, (sum, c) => sum + c.amount);
 
-    await _plugin.zonedSchedule(
-      NotificationIds.weeklyDigest,
-      title,
-      body(upcoming.length, '${total.toStringAsFixed(2)} $currency'),
-      tz.TZDateTime.from(scheduledAt, tz.local),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          AppConstants.notificationChannelId,
-          'Commitment reminders',
-          channelDescription: 'Local reminders for upcoming commitments',
+    try {
+      await _plugin.zonedSchedule(
+        NotificationIds.weeklyDigest,
+        title,
+        body(upcoming.length, '${total.toStringAsFixed(2)} $currency'),
+        tz.TZDateTime.from(scheduledAt, tz.local),
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            AppConstants.notificationChannelId,
+            'Commitment reminders',
+            channelDescription: 'Local reminders for upcoming commitments',
+          ),
+          iOS: DarwinNotificationDetails(),
         ),
-        iOS: DarwinNotificationDetails(),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-    );
+        androidScheduleMode: AndroidScheduleMode.inexact,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      );
+    } catch (e) {
+      // ignore: avoid_print
+      print('[LocalNotificationService] syncWeeklyDigest failed: $e');
+    }
   }
 
   Future<void> cancelForCommitment(String commitmentId) async {
