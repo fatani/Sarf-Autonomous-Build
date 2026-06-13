@@ -58,17 +58,20 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('commitment form hides exchange rate for SAR', (tester) async {
+  testWidgets('SAR form hides paid amount and exchange rate fields', (tester) async {
     await pumpForm(tester);
     expect(find.text('Exchange rate'), findsNothing);
+    expect(find.text('Paid amount in SAR'), findsNothing);
   });
 
-  testWidgets('commitment form shows exchange rate for USD', (tester) async {
+  testWidgets('USD form shows paid amount in SAR, not exchange rate', (tester) async {
     await pumpForm(tester);
     await tester.tap(find.byType(DropdownButtonFormField<String>));
     await tester.pumpAndSettle();
     await tester.tap(find.text('USD').last);
     await tester.pumpAndSettle();
-    expect(find.text('Exchange rate'), findsOneWidget);
+
+    expect(find.text('Paid amount in SAR'), findsOneWidget);
+    expect(find.text('Exchange rate'), findsNothing);
   });
 }

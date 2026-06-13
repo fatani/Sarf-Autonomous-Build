@@ -2,38 +2,38 @@ import 'package:sarf/core/constants/app_constants.dart';
 import 'package:sarf/core/domain/enums.dart';
 import 'package:sarf/core/domain/models.dart';
 
-/// Local currency conversion helpers — no FX API, manual rate only.
+/// Local paid-amount helpers — no FX API, user enters actual charged amount.
 abstract final class CommitmentCurrency {
   static bool needsConversion(String originalCurrency, String reportingCurrency) {
     return originalCurrency != reportingCurrency;
   }
 
-  static double computeEstimatedReportingAmount({
+  static double? computeEffectiveRate({
     required double originalAmount,
+    required double paidReportingAmount,
     required String originalCurrency,
     required String reportingCurrency,
-    double? exchangeRate,
   }) {
-    if (originalCurrency == reportingCurrency) {
-      return originalAmount;
+    if (originalCurrency == reportingCurrency || originalAmount <= 0) {
+      return 1.0;
     }
-    return originalAmount * (exchangeRate ?? 1.0);
+    return paidReportingAmount / originalAmount;
   }
 
   static CommitmentModel normalize({
     required CommitmentModel draft,
     required String reportingCurrency,
-    double? exchangeRate,
+    double? paidReportingAmount,
     PaymentMethod? paymentMethod,
     String? Function()? paymentSourceLabel,
   }) {
     final sameCurrency = draft.currency == reportingCurrency;
-    final rate = sameCurrency ? 1.0 : exchangeRate;
-    final estimated = computeEstimatedReportingAmount(
+    final paid = sameCurrency ? draft.amount : (paidReportingAmount ?? draft.paidReportingAmount);
+    final rate = computeEffectiveRate(
       originalAmount: draft.amount,
+      paidReportingAmount: paid,
       originalCurrency: draft.currency,
       reportingCurrency: reportingCurrency,
-      exchangeRate: rate,
     );
 
     return CommitmentModel(
@@ -52,8 +52,8 @@ abstract final class CommitmentCurrency {
       createdAt: draft.createdAt,
       updatedAt: draft.updatedAt,
       reportingCurrency: reportingCurrency,
-      estimatedReportingAmount: estimated,
-      exchangeRate: sameCurrency ? 1.0 : rate,
+      paidReportingAmount: paid,
+      exchangeRate: rate,
       paymentMethod: paymentMethod ?? draft.paymentMethod,
       paymentSourceLabel:
           paymentSourceLabel != null ? paymentSourceLabel() : draft.paymentSourceLabel,
@@ -79,14 +79,16 @@ abstract final class CommitmentCurrency {
   }) {
     final reportingCurrency =
         json['reportingCurrency'] as String? ?? AppConstants.defaultCurrency;
-    final exchangeRate = (json['exchangeRate'] as num?)?.toDouble();
     final sameCurrency = currency == reportingCurrency;
-    final estimatedReportingAmount = (json['estimatedReportingAmount'] as num?)?.toDouble() ??
-        computeEstimatedReportingAmount(
+    final paidReportingAmount = (json['paidReportingAmount'] as num?)?.toDouble() ??
+        (json['estimatedReportingAmount'] as num?)?.toDouble() ??
+        amount;
+    final exchangeRate = (json['exchangeRate'] as num?)?.toDouble() ??
+        computeEffectiveRate(
           originalAmount: amount,
+          paidReportingAmount: paidReportingAmount,
           originalCurrency: currency,
           reportingCurrency: reportingCurrency,
-          exchangeRate: sameCurrency ? 1.0 : exchangeRate,
         );
 
     return CommitmentModel(
@@ -105,7 +107,7 @@ abstract final class CommitmentCurrency {
       createdAt: createdAt,
       updatedAt: updatedAt,
       reportingCurrency: reportingCurrency,
-      estimatedReportingAmount: estimatedReportingAmount,
+      paidReportingAmount: paidReportingAmount,
       exchangeRate: sameCurrency ? 1.0 : exchangeRate,
       paymentMethod: PaymentMethod.fromStorage(json['paymentMethod'] as String?),
       paymentSourceLabel: json['paymentSourceLabel'] as String?,

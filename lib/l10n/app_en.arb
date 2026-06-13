@@ -177,22 +177,25 @@
   "suggestedDefaultHint": "Suggested default only",
   "amountSectionTitle": "Amount",
   "paymentSectionTitle": "Payment",
-  "exchangeRateLabel": "Exchange rate",
-  "exchangeRateHint": "1 {originalCurrency} = ? {reportingCurrency}",
-  "@exchangeRateHint": {
+  "originalAmountLabel": "Original amount",
+  "originalCurrencyLabel": "Original currency",
+  "paidAmountInReportingCurrency": "Paid amount in {currency}",
+  "@paidAmountInReportingCurrency": {
     "placeholders": {
-      "originalCurrency": {"type": "String"},
-      "reportingCurrency": {"type": "String"}
+      "currency": {"type": "String"}
     }
   },
-  "invalidExchangeRate": "Enter a valid exchange rate",
-  "estimatedReportingAmount": "Estimated: {amount}",
-  "@estimatedReportingAmount": {
+  "invalidPaidAmount": "Enter the actual amount charged",
+  "paidAmountLabel": "Paid in reporting currency",
+  "effectiveRateLabel": "Effective rate",
+  "effectiveRate": "{rate} {reportingCurrency} / {originalCurrency}",
+  "@effectiveRate": {
     "placeholders": {
-      "amount": {"type": "String"}
+      "rate": {"type": "String"},
+      "reportingCurrency": {"type": "String"},
+      "originalCurrency": {"type": "String"}
     }
   },
-  "estimatedReportingAmountLabel": "Estimated in reporting currency",
   "paymentMethodLabel": "Payment method",
   "paymentMethodCard": "Card",
   "paymentMethodMada": "Mada",
@@ -202,7 +205,7 @@
   "paymentMethodOther": "Other",
   "paymentSourceLabel": "Payment source",
   "paymentSourceHint": "Optional — e.g. Al Rajhi Visa",
-  "amountApprox": "≈",
+  "amountPaidArrow": "→",
   "paidBy": "Paid by: {source}",
   "@paidBy": {
     "placeholders": {

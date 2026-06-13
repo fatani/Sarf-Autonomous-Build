@@ -403,23 +403,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paymentSectionTitle => 'الدفع';
 
   @override
-  String get exchangeRateLabel => 'سعر التحويل';
+  String get originalAmountLabel => 'المبلغ الأصلي';
 
   @override
-  String exchangeRateHint(String originalCurrency, String reportingCurrency) {
-    return '1 $originalCurrency = ? $reportingCurrency';
+  String get originalCurrencyLabel => 'العملة الأصلية';
+
+  @override
+  String paidAmountInReportingCurrency(String currency) {
+    return 'المبلغ المخصوم بال$currency';
   }
 
   @override
-  String get invalidExchangeRate => 'أدخل سعر تحويل صالحًا';
+  String get invalidPaidAmount => 'أدخل المبلغ المخصوم فعلياً';
 
   @override
-  String estimatedReportingAmount(String amount) {
-    return 'المقدّر: $amount';
+  String get paidAmountLabel => 'المبلغ المدفوع بعملة التقرير';
+
+  @override
+  String get effectiveRateLabel => 'سعر التحويل الفعلي';
+
+  @override
+  String effectiveRate(
+    String rate,
+    String reportingCurrency,
+    String originalCurrency,
+  ) {
+    return '$rate $reportingCurrency / $originalCurrency';
   }
-
-  @override
-  String get estimatedReportingAmountLabel => 'المبلغ المقدّر بعملة التقرير';
 
   @override
   String get paymentMethodLabel => 'طريقة الدفع';
@@ -449,7 +459,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paymentSourceHint => 'اختياري — مثال: بطاقة الراجحي Visa';
 
   @override
-  String get amountApprox => '≈';
+  String get amountPaidArrow => '→';
 
   @override
   String paidBy(String source) {

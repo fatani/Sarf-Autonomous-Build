@@ -105,7 +105,7 @@ class BackupService {
         'amount': c.amount,
         'currency': c.currency,
         'reportingCurrency': c.reportingCurrency,
-        'estimatedReportingAmount': c.estimatedReportingAmount,
+        'paidReportingAmount': c.paidReportingAmount,
         if (c.exchangeRate != null) 'exchangeRate': c.exchangeRate,
         'paymentMethod': c.paymentMethod.storageKey,
         if (c.paymentSourceLabel != null) 'paymentSourceLabel': c.paymentSourceLabel,

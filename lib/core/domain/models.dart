@@ -17,7 +17,7 @@ class CommitmentModel {
     required this.createdAt,
     required this.updatedAt,
     required this.reportingCurrency,
-    required this.estimatedReportingAmount,
+    required this.paidReportingAmount,
     this.exchangeRate,
     this.paymentMethod = PaymentMethod.card,
     this.paymentSourceLabel,
@@ -42,7 +42,11 @@ class CommitmentModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String reportingCurrency;
-  final double estimatedReportingAmount;
+
+  /// Actual amount charged in [reportingCurrency] (e.g. SAR deducted from card).
+  final double paidReportingAmount;
+
+  /// Computed effective rate (paid / original). Stored for convenience, not user input.
   final double? exchangeRate;
   final PaymentMethod paymentMethod;
   final String? paymentSourceLabel;
@@ -53,6 +57,13 @@ class CommitmentModel {
   bool get isDeleted => deletedAt != null;
   bool get isActive => !isDeleted && !isPaused;
   bool get hasForeignCurrency => currency != reportingCurrency;
+
+  double? get effectiveExchangeRate {
+    if (!hasForeignCurrency || amount <= 0) {
+      return null;
+    }
+    return exchangeRate ?? (paidReportingAmount / amount);
+  }
 
   CommitmentModel copyWith({
     String? name,
@@ -68,7 +79,7 @@ class CommitmentModel {
     DateTime? Function()? deletedAt,
     DateTime? updatedAt,
     String? reportingCurrency,
-    double? estimatedReportingAmount,
+    double? paidReportingAmount,
     double? Function()? exchangeRate,
     PaymentMethod? paymentMethod,
     String? Function()? paymentSourceLabel,
@@ -90,7 +101,7 @@ class CommitmentModel {
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       reportingCurrency: reportingCurrency ?? this.reportingCurrency,
-      estimatedReportingAmount: estimatedReportingAmount ?? this.estimatedReportingAmount,
+      paidReportingAmount: paidReportingAmount ?? this.paidReportingAmount,
       exchangeRate: exchangeRate != null ? exchangeRate() : this.exchangeRate,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       paymentSourceLabel:

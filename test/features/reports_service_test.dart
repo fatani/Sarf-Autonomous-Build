@@ -38,7 +38,7 @@ void main() {
     expect(report.byCategory[CommitmentCategory.utilities], 250);
   });
 
-  test('reports service uses estimatedReportingAmount', () {
+  test('reports service uses paidReportingAmount', () {
     final service = ReportsService();
     final now = DateTime(2026, 6, 1);
     final commitments = [
@@ -48,7 +48,7 @@ void main() {
         amount: 20,
         currency: 'USD',
         reportingCurrency: 'SAR',
-        estimatedReportingAmount: 75,
+        paidReportingAmount: 78.42,
         nextDueDate: now,
         createdAt: now,
       ),
@@ -60,6 +60,6 @@ void main() {
       now: now,
     );
 
-    expect(report.totalMonthly, 75);
+    expect(report.totalMonthly, 78.42);
   });
 }

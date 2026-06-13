@@ -171,12 +171,12 @@ class $CommitmentsTable extends Commitments
         requiredDuringInsert: false,
         defaultValue: const Constant('SAR'),
       );
-  static const VerificationMeta _estimatedReportingAmountMeta =
-      const VerificationMeta('estimatedReportingAmount');
+  static const VerificationMeta _paidReportingAmountMeta =
+      const VerificationMeta('paidReportingAmount');
   @override
-  late final GeneratedColumn<double> estimatedReportingAmount =
+  late final GeneratedColumn<double> paidReportingAmount =
       GeneratedColumn<double>(
-        'estimated_reporting_amount',
+        'paid_reporting_amount',
         aliasedName,
         false,
         type: DriftSqlType.double,
@@ -234,7 +234,7 @@ class $CommitmentsTable extends Commitments
     createdAt,
     updatedAt,
     reportingCurrency,
-    estimatedReportingAmount,
+    paidReportingAmount,
     exchangeRate,
     paymentMethod,
     paymentSourceLabel,
@@ -368,12 +368,12 @@ class $CommitmentsTable extends Commitments
         ),
       );
     }
-    if (data.containsKey('estimated_reporting_amount')) {
+    if (data.containsKey('paid_reporting_amount')) {
       context.handle(
-        _estimatedReportingAmountMeta,
-        estimatedReportingAmount.isAcceptableOrUnknown(
-          data['estimated_reporting_amount']!,
-          _estimatedReportingAmountMeta,
+        _paidReportingAmountMeta,
+        paidReportingAmount.isAcceptableOrUnknown(
+          data['paid_reporting_amount']!,
+          _paidReportingAmountMeta,
         ),
       );
     }
@@ -473,9 +473,9 @@ class $CommitmentsTable extends Commitments
         DriftSqlType.string,
         data['${effectivePrefix}reporting_currency'],
       )!,
-      estimatedReportingAmount: attachedDatabase.typeMapping.read(
+      paidReportingAmount: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
-        data['${effectivePrefix}estimated_reporting_amount'],
+        data['${effectivePrefix}paid_reporting_amount'],
       )!,
       exchangeRate: attachedDatabase.typeMapping.read(
         DriftSqlType.double,
@@ -514,7 +514,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String reportingCurrency;
-  final double estimatedReportingAmount;
+  final double paidReportingAmount;
   final double? exchangeRate;
   final String paymentMethod;
   final String? paymentSourceLabel;
@@ -534,7 +534,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     required this.createdAt,
     required this.updatedAt,
     required this.reportingCurrency,
-    required this.estimatedReportingAmount,
+    required this.paidReportingAmount,
     this.exchangeRate,
     required this.paymentMethod,
     this.paymentSourceLabel,
@@ -565,9 +565,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     map['reporting_currency'] = Variable<String>(reportingCurrency);
-    map['estimated_reporting_amount'] = Variable<double>(
-      estimatedReportingAmount,
-    );
+    map['paid_reporting_amount'] = Variable<double>(paidReportingAmount);
     if (!nullToAbsent || exchangeRate != null) {
       map['exchange_rate'] = Variable<double>(exchangeRate);
     }
@@ -603,7 +601,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
       reportingCurrency: Value(reportingCurrency),
-      estimatedReportingAmount: Value(estimatedReportingAmount),
+      paidReportingAmount: Value(paidReportingAmount),
       exchangeRate: exchangeRate == null && nullToAbsent
           ? const Value.absent()
           : Value(exchangeRate),
@@ -635,8 +633,8 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
       reportingCurrency: serializer.fromJson<String>(json['reportingCurrency']),
-      estimatedReportingAmount: serializer.fromJson<double>(
-        json['estimatedReportingAmount'],
+      paidReportingAmount: serializer.fromJson<double>(
+        json['paidReportingAmount'],
       ),
       exchangeRate: serializer.fromJson<double?>(json['exchangeRate']),
       paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
@@ -664,9 +662,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
       'reportingCurrency': serializer.toJson<String>(reportingCurrency),
-      'estimatedReportingAmount': serializer.toJson<double>(
-        estimatedReportingAmount,
-      ),
+      'paidReportingAmount': serializer.toJson<double>(paidReportingAmount),
       'exchangeRate': serializer.toJson<double?>(exchangeRate),
       'paymentMethod': serializer.toJson<String>(paymentMethod),
       'paymentSourceLabel': serializer.toJson<String?>(paymentSourceLabel),
@@ -689,7 +685,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     DateTime? createdAt,
     DateTime? updatedAt,
     String? reportingCurrency,
-    double? estimatedReportingAmount,
+    double? paidReportingAmount,
     Value<double?> exchangeRate = const Value.absent(),
     String? paymentMethod,
     Value<String?> paymentSourceLabel = const Value.absent(),
@@ -711,8 +707,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
     reportingCurrency: reportingCurrency ?? this.reportingCurrency,
-    estimatedReportingAmount:
-        estimatedReportingAmount ?? this.estimatedReportingAmount,
+    paidReportingAmount: paidReportingAmount ?? this.paidReportingAmount,
     exchangeRate: exchangeRate.present ? exchangeRate.value : this.exchangeRate,
     paymentMethod: paymentMethod ?? this.paymentMethod,
     paymentSourceLabel: paymentSourceLabel.present
@@ -746,9 +741,9 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       reportingCurrency: data.reportingCurrency.present
           ? data.reportingCurrency.value
           : this.reportingCurrency,
-      estimatedReportingAmount: data.estimatedReportingAmount.present
-          ? data.estimatedReportingAmount.value
-          : this.estimatedReportingAmount,
+      paidReportingAmount: data.paidReportingAmount.present
+          ? data.paidReportingAmount.value
+          : this.paidReportingAmount,
       exchangeRate: data.exchangeRate.present
           ? data.exchangeRate.value
           : this.exchangeRate,
@@ -779,7 +774,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('reportingCurrency: $reportingCurrency, ')
-          ..write('estimatedReportingAmount: $estimatedReportingAmount, ')
+          ..write('paidReportingAmount: $paidReportingAmount, ')
           ..write('exchangeRate: $exchangeRate, ')
           ..write('paymentMethod: $paymentMethod, ')
           ..write('paymentSourceLabel: $paymentSourceLabel')
@@ -804,7 +799,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     createdAt,
     updatedAt,
     reportingCurrency,
-    estimatedReportingAmount,
+    paidReportingAmount,
     exchangeRate,
     paymentMethod,
     paymentSourceLabel,
@@ -828,7 +823,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt &&
           other.reportingCurrency == this.reportingCurrency &&
-          other.estimatedReportingAmount == this.estimatedReportingAmount &&
+          other.paidReportingAmount == this.paidReportingAmount &&
           other.exchangeRate == this.exchangeRate &&
           other.paymentMethod == this.paymentMethod &&
           other.paymentSourceLabel == this.paymentSourceLabel);
@@ -850,7 +845,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<String> reportingCurrency;
-  final Value<double> estimatedReportingAmount;
+  final Value<double> paidReportingAmount;
   final Value<double?> exchangeRate;
   final Value<String> paymentMethod;
   final Value<String?> paymentSourceLabel;
@@ -871,7 +866,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.reportingCurrency = const Value.absent(),
-    this.estimatedReportingAmount = const Value.absent(),
+    this.paidReportingAmount = const Value.absent(),
     this.exchangeRate = const Value.absent(),
     this.paymentMethod = const Value.absent(),
     this.paymentSourceLabel = const Value.absent(),
@@ -893,7 +888,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     required DateTime createdAt,
     required DateTime updatedAt,
     this.reportingCurrency = const Value.absent(),
-    this.estimatedReportingAmount = const Value.absent(),
+    this.paidReportingAmount = const Value.absent(),
     this.exchangeRate = const Value.absent(),
     this.paymentMethod = const Value.absent(),
     this.paymentSourceLabel = const Value.absent(),
@@ -923,7 +918,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<String>? reportingCurrency,
-    Expression<double>? estimatedReportingAmount,
+    Expression<double>? paidReportingAmount,
     Expression<double>? exchangeRate,
     Expression<String>? paymentMethod,
     Expression<String>? paymentSourceLabel,
@@ -946,8 +941,8 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (reportingCurrency != null) 'reporting_currency': reportingCurrency,
-      if (estimatedReportingAmount != null)
-        'estimated_reporting_amount': estimatedReportingAmount,
+      if (paidReportingAmount != null)
+        'paid_reporting_amount': paidReportingAmount,
       if (exchangeRate != null) 'exchange_rate': exchangeRate,
       if (paymentMethod != null) 'payment_method': paymentMethod,
       if (paymentSourceLabel != null)
@@ -972,7 +967,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<String>? reportingCurrency,
-    Value<double>? estimatedReportingAmount,
+    Value<double>? paidReportingAmount,
     Value<double?>? exchangeRate,
     Value<String>? paymentMethod,
     Value<String?>? paymentSourceLabel,
@@ -994,8 +989,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       reportingCurrency: reportingCurrency ?? this.reportingCurrency,
-      estimatedReportingAmount:
-          estimatedReportingAmount ?? this.estimatedReportingAmount,
+      paidReportingAmount: paidReportingAmount ?? this.paidReportingAmount,
       exchangeRate: exchangeRate ?? this.exchangeRate,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       paymentSourceLabel: paymentSourceLabel ?? this.paymentSourceLabel,
@@ -1051,9 +1045,9 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     if (reportingCurrency.present) {
       map['reporting_currency'] = Variable<String>(reportingCurrency.value);
     }
-    if (estimatedReportingAmount.present) {
-      map['estimated_reporting_amount'] = Variable<double>(
-        estimatedReportingAmount.value,
+    if (paidReportingAmount.present) {
+      map['paid_reporting_amount'] = Variable<double>(
+        paidReportingAmount.value,
       );
     }
     if (exchangeRate.present) {
@@ -1089,7 +1083,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('reportingCurrency: $reportingCurrency, ')
-          ..write('estimatedReportingAmount: $estimatedReportingAmount, ')
+          ..write('paidReportingAmount: $paidReportingAmount, ')
           ..write('exchangeRate: $exchangeRate, ')
           ..write('paymentMethod: $paymentMethod, ')
           ..write('paymentSourceLabel: $paymentSourceLabel, ')
@@ -2514,7 +2508,7 @@ typedef $$CommitmentsTableCreateCompanionBuilder =
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<String> reportingCurrency,
-      Value<double> estimatedReportingAmount,
+      Value<double> paidReportingAmount,
       Value<double?> exchangeRate,
       Value<String> paymentMethod,
       Value<String?> paymentSourceLabel,
@@ -2537,7 +2531,7 @@ typedef $$CommitmentsTableUpdateCompanionBuilder =
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<String> reportingCurrency,
-      Value<double> estimatedReportingAmount,
+      Value<double> paidReportingAmount,
       Value<double?> exchangeRate,
       Value<String> paymentMethod,
       Value<String?> paymentSourceLabel,
@@ -2628,8 +2622,8 @@ class $$CommitmentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get estimatedReportingAmount => $composableBuilder(
-    column: $table.estimatedReportingAmount,
+  ColumnFilters<double> get paidReportingAmount => $composableBuilder(
+    column: $table.paidReportingAmount,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -2733,8 +2727,8 @@ class $$CommitmentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get estimatedReportingAmount => $composableBuilder(
-    column: $table.estimatedReportingAmount,
+  ColumnOrderings<double> get paidReportingAmount => $composableBuilder(
+    column: $table.paidReportingAmount,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -2818,8 +2812,8 @@ class $$CommitmentsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<double> get estimatedReportingAmount => $composableBuilder(
-    column: $table.estimatedReportingAmount,
+  GeneratedColumn<double> get paidReportingAmount => $composableBuilder(
+    column: $table.paidReportingAmount,
     builder: (column) => column,
   );
 
@@ -2885,7 +2879,7 @@ class $$CommitmentsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<String> reportingCurrency = const Value.absent(),
-                Value<double> estimatedReportingAmount = const Value.absent(),
+                Value<double> paidReportingAmount = const Value.absent(),
                 Value<double?> exchangeRate = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
                 Value<String?> paymentSourceLabel = const Value.absent(),
@@ -2906,7 +2900,7 @@ class $$CommitmentsTableTableManager
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 reportingCurrency: reportingCurrency,
-                estimatedReportingAmount: estimatedReportingAmount,
+                paidReportingAmount: paidReportingAmount,
                 exchangeRate: exchangeRate,
                 paymentMethod: paymentMethod,
                 paymentSourceLabel: paymentSourceLabel,
@@ -2929,7 +2923,7 @@ class $$CommitmentsTableTableManager
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<String> reportingCurrency = const Value.absent(),
-                Value<double> estimatedReportingAmount = const Value.absent(),
+                Value<double> paidReportingAmount = const Value.absent(),
                 Value<double?> exchangeRate = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
                 Value<String?> paymentSourceLabel = const Value.absent(),
@@ -2950,7 +2944,7 @@ class $$CommitmentsTableTableManager
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 reportingCurrency: reportingCurrency,
-                estimatedReportingAmount: estimatedReportingAmount,
+                paidReportingAmount: paidReportingAmount,
                 exchangeRate: exchangeRate,
                 paymentMethod: paymentMethod,
                 paymentSourceLabel: paymentSourceLabel,

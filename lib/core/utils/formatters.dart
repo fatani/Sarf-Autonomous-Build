@@ -19,13 +19,6 @@ abstract final class Formatters {
     Locale locale,
     AppLocalizations l10n,
   ) {
-    if (!commitment.hasForeignCurrency) {
-      return money(
-        commitment.originalAmount,
-        commitment.originalCurrency,
-        locale,
-      );
-    }
     return money(commitment.originalAmount, commitment.originalCurrency, locale);
   }
 
@@ -37,7 +30,7 @@ abstract final class Formatters {
     if (!commitment.hasForeignCurrency) {
       return '';
     }
-    return '${l10n.amountApprox} ${money(commitment.estimatedReportingAmount, commitment.reportingCurrency, locale)}';
+    return '${l10n.amountPaidArrow} ${money(commitment.paidReportingAmount, commitment.reportingCurrency, locale)}';
   }
 
   static String commitmentAmountLine(
@@ -53,8 +46,20 @@ abstract final class Formatters {
       );
     }
     return '${money(commitment.originalAmount, commitment.originalCurrency, locale)} '
-        '${l10n.amountApprox} '
-        '${money(commitment.estimatedReportingAmount, commitment.reportingCurrency, locale)}';
+        '${l10n.amountPaidArrow} '
+        '${money(commitment.paidReportingAmount, commitment.reportingCurrency, locale)}';
+  }
+
+  static String? effectiveRateLine(CommitmentModel commitment, AppLocalizations l10n) {
+    final rate = commitment.effectiveExchangeRate;
+    if (rate == null || !commitment.hasForeignCurrency) {
+      return null;
+    }
+    return l10n.effectiveRate(
+      rate.toStringAsFixed(2),
+      commitment.reportingCurrency,
+      commitment.originalCurrency,
+    );
   }
 
   static String? paymentSourceLine(CommitmentModel commitment, AppLocalizations l10n) {

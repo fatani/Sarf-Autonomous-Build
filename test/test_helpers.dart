@@ -12,7 +12,7 @@ CommitmentModel testCommitment({
   DateTime? createdAt,
   DateTime? updatedAt,
   String? reportingCurrency,
-  double? estimatedReportingAmount,
+  double? paidReportingAmount,
   double? exchangeRate,
   PaymentMethod paymentMethod = PaymentMethod.card,
   String? paymentSourceLabel,
@@ -22,7 +22,7 @@ CommitmentModel testCommitment({
   final now = createdAt ?? DateTime.utc(2026, 1, 1);
   final due = nextDueDate ?? DateTime.utc(2026, 1, 15);
   final reporting = reportingCurrency ?? currency;
-  final estimated = estimatedReportingAmount ?? amount;
+  final paid = paidReportingAmount ?? amount;
 
   return CommitmentModel(
     id: id,
@@ -35,8 +35,9 @@ CommitmentModel testCommitment({
     createdAt: now,
     updatedAt: updatedAt ?? now,
     reportingCurrency: reporting,
-    estimatedReportingAmount: estimated,
-    exchangeRate: exchangeRate ?? (currency == reporting ? 1.0 : null),
+    paidReportingAmount: paid,
+    exchangeRate: exchangeRate ??
+        (currency == reporting || amount <= 0 ? 1.0 : paid / amount),
     paymentMethod: paymentMethod,
     paymentSourceLabel: paymentSourceLabel,
     isPaused: isPaused,

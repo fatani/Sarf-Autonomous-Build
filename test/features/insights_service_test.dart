@@ -93,7 +93,7 @@ void main() {
       expect(summary.mostExpensive, hasLength(2));
     });
 
-    test('uses estimatedReportingAmount for foreign currency totals', () {
+    test('uses paidReportingAmount for foreign currency totals', () {
       final service = InsightsService();
       final now = DateTime(2026, 6, 1);
       final commitments = [
@@ -111,7 +111,7 @@ void main() {
           amount: 20,
           currency: 'USD',
           reportingCurrency: 'SAR',
-          estimatedReportingAmount: 75,
+          paidReportingAmount: 78.42,
           nextDueDate: now,
           createdAt: now,
         ),
@@ -123,12 +123,12 @@ void main() {
         now: now,
       );
 
-      expect(summary.monthlyTotal, 175);
+      expect(summary.monthlyTotal, closeTo(178.42, 0.001));
       expect(summary.mostExpensive.first.name, 'Local');
       expect(summary.mostExpensive[1].name, 'ChatGPT');
     });
 
-    test('top 3 most expensive uses estimatedReportingAmount monthly equivalent', () {
+    test('top 3 most expensive uses paidReportingAmount monthly equivalent', () {
       final service = InsightsService();
       final now = DateTime(2026, 6, 1);
       final commitments = [
@@ -138,7 +138,7 @@ void main() {
           amount: 10,
           currency: 'USD',
           reportingCurrency: 'SAR',
-          estimatedReportingAmount: 37.5,
+          paidReportingAmount: 37.5,
           nextDueDate: now,
           createdAt: now,
         ),

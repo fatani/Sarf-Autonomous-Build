@@ -16,7 +16,7 @@ class Commitments extends Table {
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
   TextColumn get reportingCurrency => text().withDefault(const Constant('SAR'))();
-  RealColumn get estimatedReportingAmount => real().withDefault(const Constant(0))();
+  RealColumn get paidReportingAmount => real().withDefault(const Constant(0))();
   RealColumn get exchangeRate => real().nullable()();
   TextColumn get paymentMethod => text().withDefault(const Constant('card'))();
   TextColumn get paymentSourceLabel => text().nullable()();

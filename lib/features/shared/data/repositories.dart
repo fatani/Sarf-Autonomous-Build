@@ -50,7 +50,7 @@ class CommitmentRepository {
             createdAt: Value(commitment.createdAt),
             updatedAt: Value(commitment.updatedAt),
             reportingCurrency: Value(commitment.reportingCurrency),
-            estimatedReportingAmount: Value(commitment.estimatedReportingAmount),
+            paidReportingAmount: Value(commitment.paidReportingAmount),
             exchangeRate: Value(commitment.exchangeRate),
             paymentMethod: Value(commitment.paymentMethod.storageKey),
             paymentSourceLabel: Value(commitment.paymentSourceLabel),
@@ -126,7 +126,7 @@ class CommitmentRepository {
                     createdAt: Value(commitment.createdAt),
                     updatedAt: Value(commitment.updatedAt),
                     reportingCurrency: Value(commitment.reportingCurrency),
-                    estimatedReportingAmount: Value(commitment.estimatedReportingAmount),
+                    paidReportingAmount: Value(commitment.paidReportingAmount),
                     exchangeRate: Value(commitment.exchangeRate),
                     paymentMethod: Value(commitment.paymentMethod.storageKey),
                     paymentSourceLabel: Value(commitment.paymentSourceLabel),
@@ -141,9 +141,9 @@ class CommitmentRepository {
 
   CommitmentModel _mapRow(Commitment row) {
     final reportingCurrency = row.reportingCurrency;
-    final estimatedReportingAmount = row.estimatedReportingAmount == 0 && row.amount != 0
+    final paidReportingAmount = row.paidReportingAmount == 0 && row.amount != 0
         ? row.amount
-        : row.estimatedReportingAmount;
+        : row.paidReportingAmount;
 
     return CommitmentModel(
       id: row.id,
@@ -161,8 +161,11 @@ class CommitmentRepository {
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
       reportingCurrency: reportingCurrency,
-      estimatedReportingAmount: estimatedReportingAmount,
-      exchangeRate: row.exchangeRate ?? (row.currency == reportingCurrency ? 1.0 : null),
+      paidReportingAmount: paidReportingAmount,
+      exchangeRate: row.exchangeRate ??
+          (row.currency == reportingCurrency || row.amount <= 0
+              ? 1.0
+              : paidReportingAmount / row.amount),
       paymentMethod: PaymentMethod.fromStorage(row.paymentMethod),
       paymentSourceLabel: row.paymentSourceLabel,
     );

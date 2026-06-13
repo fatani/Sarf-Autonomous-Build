@@ -16,7 +16,7 @@ class InsightsService {
     final byCategory = <CommitmentCategory, double>{};
 
     for (final commitment in active) {
-      final reportingAmount = commitment.estimatedReportingAmount;
+      final reportingAmount = commitment.paidReportingAmount;
       final monthly = DateUtilsSarf.monthlyEquivalent(reportingAmount, commitment.billingCycle);
       final yearly = DateUtilsSarf.yearlyEquivalent(reportingAmount, commitment.billingCycle);
       monthlyTotal += monthly;
@@ -38,9 +38,9 @@ class InsightsService {
     final mostExpensive = active.toList()
       ..sort((a, b) {
         final monthlyA =
-            DateUtilsSarf.monthlyEquivalent(a.estimatedReportingAmount, a.billingCycle);
+            DateUtilsSarf.monthlyEquivalent(a.paidReportingAmount, a.billingCycle);
         final monthlyB =
-            DateUtilsSarf.monthlyEquivalent(b.estimatedReportingAmount, b.billingCycle);
+            DateUtilsSarf.monthlyEquivalent(b.paidReportingAmount, b.billingCycle);
         return monthlyB.compareTo(monthlyA);
       });
     final topExpensive = mostExpensive.take(3).toList();

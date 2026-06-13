@@ -404,23 +404,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentSectionTitle => 'Payment';
 
   @override
-  String get exchangeRateLabel => 'Exchange rate';
+  String get originalAmountLabel => 'Original amount';
 
   @override
-  String exchangeRateHint(String originalCurrency, String reportingCurrency) {
-    return '1 $originalCurrency = ? $reportingCurrency';
+  String get originalCurrencyLabel => 'Original currency';
+
+  @override
+  String paidAmountInReportingCurrency(String currency) {
+    return 'Paid amount in $currency';
   }
 
   @override
-  String get invalidExchangeRate => 'Enter a valid exchange rate';
+  String get invalidPaidAmount => 'Enter the actual amount charged';
 
   @override
-  String estimatedReportingAmount(String amount) {
-    return 'Estimated: $amount';
+  String get paidAmountLabel => 'Paid in reporting currency';
+
+  @override
+  String get effectiveRateLabel => 'Effective rate';
+
+  @override
+  String effectiveRate(
+    String rate,
+    String reportingCurrency,
+    String originalCurrency,
+  ) {
+    return '$rate $reportingCurrency / $originalCurrency';
   }
-
-  @override
-  String get estimatedReportingAmountLabel => 'Estimated in reporting currency';
 
   @override
   String get paymentMethodLabel => 'Payment method';
@@ -450,7 +460,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get paymentSourceHint => 'Optional — e.g. Al Rajhi Visa';
 
   @override
-  String get amountApprox => '≈';
+  String get amountPaidArrow => '→';
 
   @override
   String paidBy(String source) {

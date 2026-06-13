@@ -836,35 +836,51 @@ abstract class AppLocalizations {
   /// **'Payment'**
   String get paymentSectionTitle;
 
-  /// No description provided for @exchangeRateLabel.
+  /// No description provided for @originalAmountLabel.
   ///
   /// In en, this message translates to:
-  /// **'Exchange rate'**
-  String get exchangeRateLabel;
+  /// **'Original amount'**
+  String get originalAmountLabel;
 
-  /// No description provided for @exchangeRateHint.
+  /// No description provided for @originalCurrencyLabel.
   ///
   /// In en, this message translates to:
-  /// **'1 {originalCurrency} = ? {reportingCurrency}'**
-  String exchangeRateHint(String originalCurrency, String reportingCurrency);
+  /// **'Original currency'**
+  String get originalCurrencyLabel;
 
-  /// No description provided for @invalidExchangeRate.
+  /// No description provided for @paidAmountInReportingCurrency.
   ///
   /// In en, this message translates to:
-  /// **'Enter a valid exchange rate'**
-  String get invalidExchangeRate;
+  /// **'Paid amount in {currency}'**
+  String paidAmountInReportingCurrency(String currency);
 
-  /// No description provided for @estimatedReportingAmount.
+  /// No description provided for @invalidPaidAmount.
   ///
   /// In en, this message translates to:
-  /// **'Estimated: {amount}'**
-  String estimatedReportingAmount(String amount);
+  /// **'Enter the actual amount charged'**
+  String get invalidPaidAmount;
 
-  /// No description provided for @estimatedReportingAmountLabel.
+  /// No description provided for @paidAmountLabel.
   ///
   /// In en, this message translates to:
-  /// **'Estimated in reporting currency'**
-  String get estimatedReportingAmountLabel;
+  /// **'Paid in reporting currency'**
+  String get paidAmountLabel;
+
+  /// No description provided for @effectiveRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Effective rate'**
+  String get effectiveRateLabel;
+
+  /// No description provided for @effectiveRate.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate} {reportingCurrency} / {originalCurrency}'**
+  String effectiveRate(
+    String rate,
+    String reportingCurrency,
+    String originalCurrency,
+  );
 
   /// No description provided for @paymentMethodLabel.
   ///
@@ -920,11 +936,11 @@ abstract class AppLocalizations {
   /// **'Optional — e.g. Al Rajhi Visa'**
   String get paymentSourceHint;
 
-  /// No description provided for @amountApprox.
+  /// No description provided for @amountPaidArrow.
   ///
   /// In en, this message translates to:
-  /// **'≈'**
-  String get amountApprox;
+  /// **'→'**
+  String get amountPaidArrow;
 
   /// No description provided for @paidBy.
   ///

@@ -59,18 +59,27 @@ class AppDatabase extends _$AppDatabase {
           }
           if (from < 4) {
             await m.addColumn(commitments, commitments.reportingCurrency);
-            await m.addColumn(commitments, commitments.estimatedReportingAmount);
+            await m.addColumn(commitments, commitments.paidReportingAmount);
             await m.addColumn(commitments, commitments.exchangeRate);
             await m.addColumn(commitments, commitments.paymentMethod);
             await m.addColumn(commitments, commitments.paymentSourceLabel);
             await customStatement('''
               UPDATE commitments SET
                 reporting_currency = '${AppConstants.defaultCurrency}',
-                estimated_reporting_amount = amount,
+                paid_reporting_amount = amount,
                 exchange_rate = 1.0,
                 payment_method = 'card'
             ''');
             await m.addColumn(serviceTemplates, serviceTemplates.defaultCurrency);
+          }
+          if (from < 5 && from >= 4) {
+            await customStatement(
+              'ALTER TABLE commitments RENAME COLUMN estimated_reporting_amount TO paid_reporting_amount',
+            );
+            await customStatement('''
+              UPDATE commitments SET exchange_rate = paid_reporting_amount / amount
+              WHERE currency != reporting_currency AND amount > 0
+            ''');
           }
           await into(schemaMeta).insertOnConflictUpdate(
             SchemaMetaCompanion(

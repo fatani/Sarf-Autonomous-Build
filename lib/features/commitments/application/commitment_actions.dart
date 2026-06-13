@@ -19,14 +19,14 @@ class CommitmentActions {
 
   Future<CommitmentModel> createFromInput({
     required CommitmentModel draft,
-    double? exchangeRate,
+    double? paidReportingAmount,
   }) async {
     final settings = await _ref.read(settingsProvider.future);
     final now = DateTime.now().toUtc();
     final normalized = CommitmentCurrency.normalize(
       draft: draft,
       reportingCurrency: settings.defaultCurrency,
-      exchangeRate: exchangeRate ?? draft.exchangeRate,
+      paidReportingAmount: paidReportingAmount ?? draft.paidReportingAmount,
     );
 
     final commitment = CommitmentModel(
@@ -47,7 +47,7 @@ class CommitmentActions {
           : draft.createdAt,
       updatedAt: now,
       reportingCurrency: normalized.reportingCurrency,
-      estimatedReportingAmount: normalized.estimatedReportingAmount,
+      paidReportingAmount: normalized.paidReportingAmount,
       exchangeRate: normalized.exchangeRate,
       paymentMethod: normalized.paymentMethod,
       paymentSourceLabel: normalized.paymentSourceLabel,

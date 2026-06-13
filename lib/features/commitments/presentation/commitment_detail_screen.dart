@@ -170,19 +170,16 @@ class _DetailBody extends StatelessWidget {
             commitment.paymentSourceLabel!.trim().isNotEmpty)
           _DetailTile(label: l10n.paymentSourceLabel, value: commitment.paymentSourceLabel!),
         if (commitment.hasForeignCurrency) ...[
-          if (commitment.exchangeRate != null)
-            _DetailTile(
-              label: l10n.exchangeRateLabel,
-              value: commitment.exchangeRate!.toStringAsFixed(4),
-            ),
           _DetailTile(
-            label: l10n.estimatedReportingAmountLabel,
+            label: l10n.paidAmountInReportingCurrency(commitment.reportingCurrency),
             value: Formatters.money(
-              commitment.estimatedReportingAmount,
+              commitment.paidReportingAmount,
               commitment.reportingCurrency,
               locale,
             ),
           ),
+          if (Formatters.effectiveRateLine(commitment, l10n) case final rateLine?)
+            _DetailTile(label: l10n.effectiveRateLabel, value: rateLine),
         ],
         if (commitment.notes != null && commitment.notes!.isNotEmpty)
           _DetailTile(label: l10n.notesLabel, value: commitment.notes!),

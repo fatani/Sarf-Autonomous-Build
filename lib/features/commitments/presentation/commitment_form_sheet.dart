@@ -27,7 +27,7 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _amountController;
-  late final TextEditingController _exchangeRateController;
+  late final TextEditingController _paidAmountController;
   late final TextEditingController _paymentSourceController;
   late final TextEditingController _notesController;
   late BillingCycle _billingCycle;
@@ -48,8 +48,10 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
       text: existing?.amount.toString() ??
           (template?.defaultAmount?.toString() ?? ''),
     );
-    _exchangeRateController = TextEditingController(
-      text: existing?.exchangeRate?.toString() ?? '',
+    _paidAmountController = TextEditingController(
+      text: existing != null && existing.hasForeignCurrency
+          ? existing.paidReportingAmount.toString()
+          : '',
     );
     _paymentSourceController = TextEditingController(
       text: existing?.paymentSourceLabel ?? '',
@@ -69,7 +71,7 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
   void dispose() {
     _nameController.dispose();
     _amountController.dispose();
-    _exchangeRateController.dispose();
+    _paidAmountController.dispose();
     _paymentSourceController.dispose();
     _notesController.dispose();
     super.dispose();
@@ -85,24 +87,11 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
 
   double? get _parsedAmount => double.tryParse(_amountController.text.trim());
 
-  double? get _parsedExchangeRate {
+  double? get _parsedPaidAmount {
     if (!_needsConversion) {
-      return 1.0;
+      return _parsedAmount;
     }
-    return double.tryParse(_exchangeRateController.text.trim());
-  }
-
-  double? get _estimatedReportingAmount {
-    final amount = _parsedAmount;
-    if (amount == null) {
-      return null;
-    }
-    return CommitmentCurrency.computeEstimatedReportingAmount(
-      originalAmount: amount,
-      originalCurrency: _currency,
-      reportingCurrency: _reportingCurrency,
-      exchangeRate: _parsedExchangeRate,
-    );
+    return double.tryParse(_paidAmountController.text.trim());
   }
 
   @override
@@ -145,7 +134,9 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(labelText: l10n.amountLabel),
+                decoration: InputDecoration(
+                  labelText: _needsConversion ? l10n.originalAmountLabel : l10n.amountLabel,
+                ),
                 onChanged: (_) => setState(() {}),
                 validator: (value) {
                   final parsed = double.tryParse(value ?? '');
@@ -159,7 +150,9 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
               DropdownButtonFormField<String>(
                 key: ValueKey(_currency),
                 initialValue: _currency,
-                decoration: InputDecoration(labelText: l10n.currencyLabel),
+                decoration: InputDecoration(
+                  labelText: _needsConversion ? l10n.originalCurrencyLabel : l10n.currencyLabel,
+                ),
                 items: AppConstants.supportedCurrencies
                     .map(
                       (code) => DropdownMenuItem(
@@ -177,11 +170,10 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
               if (_needsConversion) ...[
                 const SizedBox(height: 12),
                 TextFormField(
-                  controller: _exchangeRateController,
+                  controller: _paidAmountController,
                   keyboardType: const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
-                    labelText: l10n.exchangeRateLabel,
-                    helperText: l10n.exchangeRateHint(_reportingCurrency, _currency),
+                    labelText: l10n.paidAmountInReportingCurrency(_reportingCurrency),
                   ),
                   onChanged: (_) => setState(() {}),
                   validator: (value) {
@@ -190,21 +182,11 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
                     }
                     final parsed = double.tryParse(value ?? '');
                     if (parsed == null || parsed <= 0) {
-                      return l10n.invalidExchangeRate;
+                      return l10n.invalidPaidAmount;
                     }
                     return null;
                   },
                 ),
-                const SizedBox(height: 8),
-                if (_estimatedReportingAmount != null)
-                  Text(
-                    l10n.estimatedReportingAmount(
-                      Formatters.money(_estimatedReportingAmount!, _reportingCurrency, locale),
-                    ),
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
               ],
               const SizedBox(height: 16),
               Text(l10n.paymentSectionTitle, style: Theme.of(context).textTheme.titleSmall),
@@ -341,10 +323,13 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
 
     final existing = widget.existing;
     final paymentSource = _paymentSourceController.text.trim();
+    final originalAmount = double.parse(_amountController.text.trim());
+    final paidAmount = _parsedPaidAmount ?? originalAmount;
+
     final draft = CommitmentModel(
       id: existing?.id ?? '',
       name: _nameController.text.trim(),
-      amount: double.parse(_amountController.text.trim()),
+      amount: originalAmount,
       currency: _currency,
       billingCycle: _billingCycle,
       category: _category,
@@ -357,15 +342,14 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
       createdAt: existing?.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
       updatedAt: existing?.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0),
       reportingCurrency: _reportingCurrency,
-      estimatedReportingAmount: _estimatedReportingAmount ?? double.parse(_amountController.text.trim()),
-      exchangeRate: _parsedExchangeRate,
+      paidReportingAmount: paidAmount,
       paymentMethod: _paymentMethod,
       paymentSourceLabel: paymentSource.isEmpty ? null : paymentSource,
     );
 
     await ref.read(commitmentActionsProvider).createFromInput(
           draft: draft,
-          exchangeRate: _parsedExchangeRate,
+          paidReportingAmount: paidAmount,
         );
     if (mounted) {
       Navigator.pop(context);

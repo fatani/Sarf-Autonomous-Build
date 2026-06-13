@@ -12,7 +12,7 @@ AppDatabase _memoryDb() => AppDatabase(NativeDatabase.memory());
 
 void main() {
   group('AppDatabase', () {
-    test('schemaVersion is 4', () {
+    test('schemaVersion is 5', () {
       final db = _memoryDb();
       addTearDown(db.close);
       expect(db.schemaVersion, AppConstants.schemaVersion);
@@ -76,7 +76,7 @@ void main() {
       expect(loaded?.amount, 49.99);
       expect(loaded?.currency, 'SAR');
       expect(loaded?.reportingCurrency, 'SAR');
-      expect(loaded?.estimatedReportingAmount, 49.99);
+      expect(loaded?.paidReportingAmount, 49.99);
       expect(loaded?.paymentMethod, PaymentMethod.mada);
       expect(loaded?.paymentSourceLabel, 'Al Rajhi Mada');
     });
@@ -91,8 +91,7 @@ void main() {
         amount: 20,
         currency: 'USD',
         reportingCurrency: 'SAR',
-        estimatedReportingAmount: 75,
-        exchangeRate: 3.75,
+        paidReportingAmount: 78.42,
         paymentMethod: PaymentMethod.card,
         paymentSourceLabel: 'Al Rajhi Visa',
       );
@@ -102,8 +101,8 @@ void main() {
 
       expect(loaded?.currency, 'USD');
       expect(loaded?.reportingCurrency, 'SAR');
-      expect(loaded?.estimatedReportingAmount, 75);
-      expect(loaded?.exchangeRate, 3.75);
+      expect(loaded?.paidReportingAmount, 78.42);
+      expect(loaded?.exchangeRate, closeTo(78.42 / 20, 0.001));
       expect(loaded?.paymentSourceLabel, 'Al Rajhi Visa');
     });
   });
