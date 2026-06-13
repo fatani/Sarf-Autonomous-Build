@@ -311,20 +311,88 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notification permission was denied. Enable it in system settings to receive reminders.';
 
   @override
-  String get trialReminderTitle => 'Trial ending soon';
-
-  @override
-  String trialReminderBody(int days) {
-    return 'Your Sarf trial ends in $days days. Review your commitments before it expires.';
-  }
-
-  @override
   String get weeklyDigestTitle => 'Weekly digest';
 
   @override
   String weeklyDigestBody(int count, String amount) {
     return '$count payments due this week — $amount total';
   }
+
+  @override
+  String get onboardingValueTitle => 'Know what you need to pay this month.';
+
+  @override
+  String get onboardingPrivacyTitle => 'Your data stays on your device.';
+
+  @override
+  String get onboardingStartTitle =>
+      'Add your first commitment and start clearly.';
+
+  @override
+  String get onboardingSkip => 'Skip';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingStart => 'Start';
+
+  @override
+  String get backupSection => 'Backup';
+
+  @override
+  String get exportBackup => 'Export backup';
+
+  @override
+  String get importBackup => 'Import backup';
+
+  @override
+  String get importBackupConfirmTitle => 'Replace all data?';
+
+  @override
+  String get importBackupConfirmBody =>
+      'Importing will replace your current commitments, custom templates, settings, and notification schedules. Built-in templates are kept. This cannot be undone.';
+
+  @override
+  String get backupExportFailed => 'Could not export backup.';
+
+  @override
+  String get backupImportSuccess => 'Backup restored successfully.';
+
+  @override
+  String get backupImportInvalidApp => 'This file is not a Sarf backup.';
+
+  @override
+  String get backupImportUnsupportedVersion =>
+      'This backup version is not supported.';
+
+  @override
+  String get backupImportUnsupportedSchema =>
+      'This backup uses a newer schema than this app supports.';
+
+  @override
+  String get backupImportInvalidFormat =>
+      'The selected file is not a valid backup.';
+
+  @override
+  String get diagnosticsSection => 'Diagnostics';
+
+  @override
+  String get exportCrashLog => 'Export crash log';
+
+  @override
+  String get exportCrashLogHint =>
+      'Local error log only. Share manually if you need help.';
+
+  @override
+  String get crashLogEmpty => 'No crash log entries yet.';
+
+  @override
+  String get errorScreenTitle => 'Something went wrong';
+
+  @override
+  String get errorScreenBody =>
+      'The app hit an unexpected error. Restart the app to continue.';
 
   @override
   String get suggestedDefaultHint => 'Suggested default only';

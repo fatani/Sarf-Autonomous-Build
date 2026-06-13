@@ -3,7 +3,12 @@
     "allow": [
       "Bash(Get-ChildItem -Path \"E:\\\\myProjects\\\\Sarf-Autonomous-Build\" -Recurse -File)",
       "Bash(Select-Object -ExpandProperty FullName)",
-      "Bash(Sort-Object)"
+      "Bash(Sort-Object)",
+      "Bash(flutter clean *)",
+      "PowerShell($env:PATH = \"C:\\\\flutter\\\\bin;$env:PATH\"; Set-Location \"E:\\\\myProjects\\\\Sarf-Autonomous-Build\"; flutter pub get 2>&1)",
+      "PowerShell($devMode = Get-ItemProperty -Path \"HKLM:\\\\SOFTWARE\\\\Microsoft\\\\Windows\\\\CurrentVersion\\\\AppModelUnlock\" -ErrorAction SilentlyContinue; Write-Host \"AllowDevelopmentWithoutDevLicense: $\\($devMode.AllowDevelopmentWithoutDevLicense\\)\")",
+      "PowerShell(New-Item -ItemType Directory -Path \"C:\\\\tmp\" -Force | Out-Null; New-Item -ItemType Directory -Path \"C:\\\\gradle\" -Force | Out-Null; [System.Environment]::SetEnvironmentVariable\\(\"GRADLE_USER_HOME\", \"C:\\\\gradle\", \"User\"\\); [System.Environment]::SetEnvironmentVariable\\(\"JAVA_HOME\", \"C:\\\\Program Files\\\\Android\\\\Android Studio\\\\jbr\", \"User\"\\); Write-Host \"Done\")",
+      "PowerShell(Get-ChildItem -Path \"E:\\\\myProjects\\\\Sarf-Autonomous-Build\\\\lib\\\\features\\\\onboarding\" -Recurse -File | ForEach-Object { $_.FullName })"
     ]
   }
 }

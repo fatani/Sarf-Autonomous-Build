@@ -139,15 +139,6 @@
   "reportPeriod": "Report period",
   "reportTotal": "Total monthly",
   "notificationPermissionDenied": "Notification permission was denied. Enable it in system settings to receive reminders.",
-  "trialReminderTitle": "Trial ending soon",
-  "trialReminderBody": "Your Sarf trial ends in {days} days. Review your commitments before it expires.",
-  "@trialReminderBody": {
-    "placeholders": {
-      "days": {
-        "type": "int"
-      }
-    }
-  },
   "weeklyDigestTitle": "Weekly digest",
   "weeklyDigestBody": "{count} payments due this week — {amount} total",
   "@weeklyDigestBody": {
@@ -160,5 +151,28 @@
       }
     }
   },
+  "onboardingValueTitle": "Know what you need to pay this month.",
+  "onboardingPrivacyTitle": "Your data stays on your device.",
+  "onboardingStartTitle": "Add your first commitment and start clearly.",
+  "onboardingSkip": "Skip",
+  "onboardingNext": "Next",
+  "onboardingStart": "Start",
+  "backupSection": "Backup",
+  "exportBackup": "Export backup",
+  "importBackup": "Import backup",
+  "importBackupConfirmTitle": "Replace all data?",
+  "importBackupConfirmBody": "Importing will replace your current commitments, custom templates, settings, and notification schedules. Built-in templates are kept. This cannot be undone.",
+  "backupExportFailed": "Could not export backup.",
+  "backupImportSuccess": "Backup restored successfully.",
+  "backupImportInvalidApp": "This file is not a Sarf backup.",
+  "backupImportUnsupportedVersion": "This backup version is not supported.",
+  "backupImportUnsupportedSchema": "This backup uses a newer schema than this app supports.",
+  "backupImportInvalidFormat": "The selected file is not a valid backup.",
+  "diagnosticsSection": "Diagnostics",
+  "exportCrashLog": "Export crash log",
+  "exportCrashLogHint": "Local error log only. Share manually if you need help.",
+  "crashLogEmpty": "No crash log entries yet.",
+  "errorScreenTitle": "Something went wrong",
+  "errorScreenBody": "The app hit an unexpected error. Restart the app to continue.",
   "suggestedDefaultHint": "Suggested default only"
 }

@@ -91,6 +91,44 @@ class CommitmentRepository {
     return rows.map(_mapRow).toList();
   }
 
+  Future<List<CommitmentModel>> getAllCommitments() async {
+    final rows = await _db.select(_db.commitments).get();
+    return rows.map(_mapRow).toList();
+  }
+
+  Future<void> replaceAll(List<CommitmentModel> commitments) async {
+    await _db.transaction(() async {
+      await _db.delete(_db.commitments).go();
+      if (commitments.isNotEmpty) {
+        await _db.batch((batch) {
+          batch.insertAll(
+            _db.commitments,
+            commitments
+                .map(
+                  (commitment) => CommitmentsCompanion(
+                    id: Value(commitment.id),
+                    name: Value(commitment.name),
+                    amount: Value(commitment.amount),
+                    currency: Value(commitment.currency),
+                    billingCycle: Value(commitment.billingCycle.storageKey),
+                    category: Value(commitment.category.storageKey),
+                    nextDueDate: Value(commitment.nextDueDate),
+                    reminderDaysBefore: Value(commitment.reminderDaysBefore),
+                    notes: Value(commitment.notes),
+                    templateId: Value(commitment.templateId),
+                    isPaused: Value(commitment.isPaused),
+                    deletedAt: Value(commitment.deletedAt),
+                    createdAt: Value(commitment.createdAt),
+                    updatedAt: Value(commitment.updatedAt),
+                  ),
+                )
+                .toList(),
+          );
+        });
+      }
+    });
+  }
+
   CommitmentModel _mapRow(Commitment row) {
     return CommitmentModel(
       id: row.id,
@@ -119,7 +157,7 @@ class SettingsRepository {
   static const _localeKey = 'locale';
   static const _notificationsKey = 'notifications_enabled';
   static const _currencyKey = 'default_currency';
-  static const _firstLaunchKey = 'first_launch_at';
+  static const _onboardingKey = 'onboarding_completed';
 
   Stream<AppSettingsModel> watchSettings() {
     return _db.select(_db.appSettings).watch().map(_mapRows);
@@ -160,28 +198,40 @@ class SettingsRepository {
     });
   }
 
-  Future<DateTime?> getFirstLaunchAt() async {
-    final row = await (_db.select(_db.appSettings)..where((t) => t.key.equals(_firstLaunchKey)))
+  Future<bool> isOnboardingCompleted() async {
+    final row = await (_db.select(_db.appSettings)..where((t) => t.key.equals(_onboardingKey)))
         .getSingleOrNull();
-    if (row == null) {
-      return null;
-    }
-    return DateTime.tryParse(row.value);
+    return row?.value == 'true';
   }
 
-  Future<DateTime> ensureFirstLaunchAt() async {
-    final existing = await getFirstLaunchAt();
-    if (existing != null) {
-      return existing;
-    }
-    final now = DateTime.now().toUtc();
+  Future<void> setOnboardingCompleted(bool completed) async {
     await _db.into(_db.appSettings).insertOnConflictUpdate(
           AppSettingsCompanion.insert(
-            key: _firstLaunchKey,
-            value: now.toIso8601String(),
+            key: _onboardingKey,
+            value: completed.toString(),
           ),
         );
-    return now;
+  }
+
+  Future<Map<String, String>> getRawSettings() async {
+    final rows = await _db.select(_db.appSettings).get();
+    return {for (final row in rows) row.key: row.value};
+  }
+
+  Future<void> replaceRawSettings(Map<String, String> settings) async {
+    await _db.transaction(() async {
+      await _db.delete(_db.appSettings).go();
+      if (settings.isNotEmpty) {
+        await _db.batch((batch) {
+          batch.insertAll(
+            _db.appSettings,
+            settings.entries
+                .map((entry) => AppSettingsCompanion.insert(key: entry.key, value: entry.value))
+                .toList(),
+          );
+        });
+      }
+    });
   }
 }
 
@@ -223,6 +273,22 @@ class TemplateRepository {
         _db.serviceTemplates,
         templates.map(_toCompanion).toList(),
       );
+    });
+  }
+
+  Future<List<ServiceTemplateModel>> getCustomTemplates() async {
+    final rows = await (_db.select(_db.serviceTemplates)
+          ..where((t) => t.isBuiltIn.equals(false)))
+        .get();
+    return rows.map(_mapRow).toList();
+  }
+
+  Future<void> replaceCustomTemplates(List<ServiceTemplateModel> templates) async {
+    await _db.transaction(() async {
+      await (_db.delete(_db.serviceTemplates)..where((t) => t.isBuiltIn.equals(false))).go();
+      if (templates.isNotEmpty) {
+        await upsertAll(templates);
+      }
     });
   }
 
@@ -295,6 +361,35 @@ class NotificationScheduleRepository {
           ..where((t) => t.status.equals('scheduled')))
         .get();
     return rows.map(_mapRow).toList();
+  }
+
+  Future<List<ScheduledNotificationRecord>> getAll() async {
+    final rows = await _db.select(_db.notificationSchedules).get();
+    return rows.map(_mapRow).toList();
+  }
+
+  Future<void> replaceAll(List<ScheduledNotificationRecord> schedules) async {
+    await _db.transaction(() async {
+      await _db.delete(_db.notificationSchedules).go();
+      if (schedules.isNotEmpty) {
+        await _db.batch((batch) {
+          batch.insertAll(
+            _db.notificationSchedules,
+            schedules
+                .map(
+                  (schedule) => NotificationSchedulesCompanion(
+                    id: Value(schedule.id),
+                    commitmentId: Value(schedule.commitmentId),
+                    scheduledAt: Value(schedule.scheduledAt),
+                    notificationId: Value(schedule.notificationId),
+                    status: Value(schedule.status),
+                  ),
+                )
+                .toList(),
+          );
+        });
+      }
+    });
   }
 
   Future<void> markCancelled(String id) async {

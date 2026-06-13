@@ -25,6 +25,8 @@ dependencies:
   flutter_local_notifications: ^18.0.1
   timezone: ^0.10.0
   flutter_timezone: ^4.1.0
+  file_picker: ^8.3.7
+  share_plus: ^10.1.4
 
 dev_dependencies:
   flutter_test:
@@ -33,6 +35,16 @@ dev_dependencies:
   build_runner: ^2.4.15
   drift_dev: ^2.26.0
   sqlite3: ^2.7.5
+  flutter_launcher_icons: ^0.14.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/app_icon.png
+  macos:
+    generate: true
+  web:
+    generate: true
 
 flutter:
   uses-material-design: true

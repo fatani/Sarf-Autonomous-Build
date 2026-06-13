@@ -2,7 +2,6 @@
 abstract final class NotificationIds {
   static const int commitmentBase = 10000;
   static const int commitmentRange = 800000;
-  static const int trialReminder = 900001;
   static const int weeklyDigest = 900002;
 
   static int commitmentReminder(String commitmentId) {

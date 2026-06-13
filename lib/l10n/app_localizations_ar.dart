@@ -311,20 +311,87 @@ class AppLocalizationsAr extends AppLocalizations {
       'تم رفض إذن الإشعارات. فعّله من إعدادات النظام لتلقي التذكيرات.';
 
   @override
-  String get trialReminderTitle => 'انتهاء التجربة قريبًا';
-
-  @override
-  String trialReminderBody(int days) {
-    return 'تنتهي تجربة صرف خلال $days أيام. راجع التزاماتك قبل انتهائها.';
-  }
-
-  @override
   String get weeklyDigestTitle => 'ملخص أسبوعي';
 
   @override
   String weeklyDigestBody(int count, String amount) {
     return '$count دفعات مستحقة هذا الأسبوع — $amount إجمالي';
   }
+
+  @override
+  String get onboardingValueTitle => 'اعرف ما عليك دفعه هذا الشهر.';
+
+  @override
+  String get onboardingPrivacyTitle => 'بياناتك لا تغادر هاتفك.';
+
+  @override
+  String get onboardingStartTitle => 'أضف أول التزام وابدأ بوضوح.';
+
+  @override
+  String get onboardingSkip => 'تخطي';
+
+  @override
+  String get onboardingNext => 'التالي';
+
+  @override
+  String get onboardingStart => 'ابدأ';
+
+  @override
+  String get backupSection => 'النسخ الاحتياطي';
+
+  @override
+  String get exportBackup => 'تصدير نسخة احتياطية';
+
+  @override
+  String get importBackup => 'استيراد نسخة احتياطية';
+
+  @override
+  String get importBackupConfirmTitle => 'استبدال كل البيانات؟';
+
+  @override
+  String get importBackupConfirmBody =>
+      'الاستيراد سيستبدل التزاماتك الحالية والقوالب المخصصة والإعدادات وجداول الإشعارات. القوالب المدمجة تبقى كما هي. لا يمكن التراجع عن هذا الإجراء.';
+
+  @override
+  String get backupExportFailed => 'تعذّر تصدير النسخة الاحتياطية.';
+
+  @override
+  String get backupImportSuccess => 'تم استعادة النسخة الاحتياطية بنجاح.';
+
+  @override
+  String get backupImportInvalidApp => 'هذا الملف ليس نسخة احتياطية من صرف.';
+
+  @override
+  String get backupImportUnsupportedVersion =>
+      'إصدار النسخة الاحتياطية غير مدعوم.';
+
+  @override
+  String get backupImportUnsupportedSchema =>
+      'هذه النسخة تستخدم مخططًا أحدث مما يدعمه التطبيق.';
+
+  @override
+  String get backupImportInvalidFormat =>
+      'الملف المحدد ليس نسخة احتياطية صالحة.';
+
+  @override
+  String get diagnosticsSection => 'التشخيص';
+
+  @override
+  String get exportCrashLog => 'تصدير سجل الأعطال';
+
+  @override
+  String get exportCrashLogHint =>
+      'سجل أخطاء محلي فقط. شاركه يدويًا إذا احتجت مساعدة.';
+
+  @override
+  String get crashLogEmpty => 'لا توجد أعطال مسجّلة بعد.';
+
+  @override
+  String get errorScreenTitle => 'حدث خطأ ما';
+
+  @override
+  String get errorScreenBody =>
+      'واجه التطبيق خطأً غير متوقع. أعد تشغيل التطبيق للمتابعة.';
 
   @override
   String get suggestedDefaultHint => 'قيمة افتراضية مقترحة فقط';

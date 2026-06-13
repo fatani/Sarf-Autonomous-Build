@@ -668,18 +668,6 @@ abstract class AppLocalizations {
   /// **'Notification permission was denied. Enable it in system settings to receive reminders.'**
   String get notificationPermissionDenied;
 
-  /// No description provided for @trialReminderTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Trial ending soon'**
-  String get trialReminderTitle;
-
-  /// No description provided for @trialReminderBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Your Sarf trial ends in {days} days. Review your commitments before it expires.'**
-  String trialReminderBody(int days);
-
   /// No description provided for @weeklyDigestTitle.
   ///
   /// In en, this message translates to:
@@ -691,6 +679,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} payments due this week — {amount} total'**
   String weeklyDigestBody(int count, String amount);
+
+  /// No description provided for @onboardingValueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Know what you need to pay this month.'**
+  String get onboardingValueTitle;
+
+  /// No description provided for @onboardingPrivacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data stays on your device.'**
+  String get onboardingPrivacyTitle;
+
+  /// No description provided for @onboardingStartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first commitment and start clearly.'**
+  String get onboardingStartTitle;
+
+  /// No description provided for @onboardingSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get onboardingSkip;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get onboardingStart;
+
+  /// No description provided for @backupSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup'**
+  String get backupSection;
+
+  /// No description provided for @exportBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Export backup'**
+  String get exportBackup;
+
+  /// No description provided for @importBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Import backup'**
+  String get importBackup;
+
+  /// No description provided for @importBackupConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace all data?'**
+  String get importBackupConfirmTitle;
+
+  /// No description provided for @importBackupConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing will replace your current commitments, custom templates, settings, and notification schedules. Built-in templates are kept. This cannot be undone.'**
+  String get importBackupConfirmBody;
+
+  /// No description provided for @backupExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export backup.'**
+  String get backupExportFailed;
+
+  /// No description provided for @backupImportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup restored successfully.'**
+  String get backupImportSuccess;
+
+  /// No description provided for @backupImportInvalidApp.
+  ///
+  /// In en, this message translates to:
+  /// **'This file is not a Sarf backup.'**
+  String get backupImportInvalidApp;
+
+  /// No description provided for @backupImportUnsupportedVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup version is not supported.'**
+  String get backupImportUnsupportedVersion;
+
+  /// No description provided for @backupImportUnsupportedSchema.
+  ///
+  /// In en, this message translates to:
+  /// **'This backup uses a newer schema than this app supports.'**
+  String get backupImportUnsupportedSchema;
+
+  /// No description provided for @backupImportInvalidFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected file is not a valid backup.'**
+  String get backupImportInvalidFormat;
+
+  /// No description provided for @diagnosticsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Diagnostics'**
+  String get diagnosticsSection;
+
+  /// No description provided for @exportCrashLog.
+  ///
+  /// In en, this message translates to:
+  /// **'Export crash log'**
+  String get exportCrashLog;
+
+  /// No description provided for @exportCrashLogHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Local error log only. Share manually if you need help.'**
+  String get exportCrashLogHint;
+
+  /// No description provided for @crashLogEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No crash log entries yet.'**
+  String get crashLogEmpty;
+
+  /// No description provided for @errorScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get errorScreenTitle;
+
+  /// No description provided for @errorScreenBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The app hit an unexpected error. Restart the app to continue.'**
+  String get errorScreenBody;
 
   /// No description provided for @suggestedDefaultHint.
   ///

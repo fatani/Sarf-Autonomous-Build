@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sarf/core/crash/crash_log_service.dart';
 import 'package:sarf/core/domain/enums.dart';
 import 'package:sarf/core/domain/models.dart';
 import 'package:sarf/core/utils/locale_utils.dart';
@@ -7,8 +8,22 @@ import 'package:sarf/database/database_provider.dart';
 import 'package:sarf/features/insights/domain/insights_service.dart';
 import 'package:sarf/features/notifications/data/local_notification_service.dart';
 import 'package:sarf/features/reports/domain/reports_service.dart';
+import 'package:sarf/features/settings/data/backup_service.dart';
 import 'package:sarf/features/shared/data/repositories.dart';
 import 'package:sarf/features/templates/data/bootstrap_service.dart';
+
+final crashLogServiceProvider = Provider<CrashLogService>((ref) {
+  return CrashLogService();
+});
+
+final backupServiceProvider = Provider<BackupService>((ref) {
+  return BackupService(
+    ref.watch(commitmentRepositoryProvider),
+    ref.watch(templateRepositoryProvider),
+    ref.watch(settingsRepositoryProvider),
+    ref.watch(notificationScheduleRepositoryProvider),
+  );
+});
 
 final commitmentRepositoryProvider = Provider<CommitmentRepository>((ref) {
   return CommitmentRepository(ref.watch(appDatabaseProvider));
@@ -29,7 +44,6 @@ final notificationScheduleRepositoryProvider = Provider<NotificationScheduleRepo
 final localNotificationServiceProvider = Provider<LocalNotificationService>((ref) {
   return LocalNotificationService(
     ref.watch(notificationScheduleRepositoryProvider),
-    ref.watch(settingsRepositoryProvider),
   );
 });
 
@@ -47,7 +61,6 @@ final reportsServiceProvider = Provider<ReportsService>((ref) {
 
 final appBootstrapProvider = FutureProvider<void>((ref) async {
   await ref.watch(bootstrapServiceProvider).ensureSeeded();
-  await ref.watch(settingsRepositoryProvider).ensureFirstLaunchAt();
   await ref.watch(localNotificationServiceProvider).initialize();
   final settings = await ref.watch(settingsRepositoryProvider).loadSettings();
   if (settings.notificationsEnabled) {
@@ -59,12 +72,15 @@ final appBootstrapProvider = FutureProvider<void>((ref) async {
           defaultCurrency: settings.defaultCurrency,
           notificationTitle: l10n.notificationTitle,
           notificationBody: (name, amount, date) => l10n.notificationBody(name, amount, date),
-          trialReminderTitle: l10n.trialReminderTitle,
-          trialReminderBody: (days) => l10n.trialReminderBody(days),
           weeklyDigestTitle: l10n.weeklyDigestTitle,
           weeklyDigestBody: (count, amount) => l10n.weeklyDigestBody(count, amount),
         );
   }
+});
+
+final onboardingCompletedProvider = FutureProvider<bool>((ref) async {
+  ref.watch(appBootstrapProvider);
+  return ref.watch(settingsRepositoryProvider).isOnboardingCompleted();
 });
 
 final settingsProvider = AsyncNotifierProvider<SettingsNotifier, AppSettingsModel>(

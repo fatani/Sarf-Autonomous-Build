@@ -11,13 +11,11 @@ import 'package:uuid/uuid.dart';
 
 class LocalNotificationService {
   LocalNotificationService(
-    this._scheduleRepository,
-    this._settingsRepository, {
+    this._scheduleRepository, {
     FlutterLocalNotificationsPlugin? plugin,
   }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
 
   final NotificationScheduleRepository _scheduleRepository;
-  final SettingsRepository _settingsRepository;
   final FlutterLocalNotificationsPlugin _plugin;
   final _uuid = const Uuid();
   bool _initialized = false;
@@ -166,55 +164,6 @@ class LocalNotificationService {
     );
   }
 
-  Future<void> syncTrialReminder({
-    required bool notificationsEnabled,
-    required String title,
-    required String Function(int days) body,
-  }) async {
-    await initialize();
-    await _plugin.cancel(NotificationIds.trialReminder);
-
-    if (!notificationsEnabled) {
-      return;
-    }
-
-    final firstLaunch = await _settingsRepository.ensureFirstLaunchAt();
-    final trialEnd = firstLaunch.add(const Duration(days: AppConstants.trialPeriodDays));
-    final reminderAt = DateTime(
-      trialEnd.year,
-      trialEnd.month,
-      trialEnd.day - AppConstants.trialReminderDaysBefore,
-      9,
-      0,
-    );
-
-    if (reminderAt.isBefore(DateTime.now())) {
-      return;
-    }
-
-    try {
-      await _plugin.zonedSchedule(
-        NotificationIds.trialReminder,
-        title,
-        body(AppConstants.trialReminderDaysBefore),
-        tz.TZDateTime.from(reminderAt, tz.local),
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            AppConstants.notificationChannelId,
-            'Commitment reminders',
-            channelDescription: 'Local reminders for upcoming commitments',
-          ),
-          iOS: DarwinNotificationDetails(),
-        ),
-        androidScheduleMode: AndroidScheduleMode.inexact,
-        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      );
-    } catch (e) {
-      // ignore: avoid_print
-      print('[LocalNotificationService] syncTrialReminder failed: $e');
-    }
-  }
-
   Future<void> syncWeeklyDigest({
     required bool notificationsEnabled,
     required List<CommitmentModel> commitments,
@@ -278,8 +227,6 @@ class LocalNotificationService {
     required String defaultCurrency,
     required String notificationTitle,
     required String Function(String name, String amount, String date) notificationBody,
-    required String trialReminderTitle,
-    required String Function(int days) trialReminderBody,
     required String weeklyDigestTitle,
     required String Function(int count, String amount) weeklyDigestBody,
   }) async {
@@ -291,11 +238,6 @@ class LocalNotificationService {
         notificationBody: notificationBody,
       );
     }
-    await syncTrialReminder(
-      notificationsEnabled: notificationsEnabled,
-      title: trialReminderTitle,
-      body: trialReminderBody,
-    );
     await syncWeeklyDigest(
       notificationsEnabled: notificationsEnabled,
       commitments: commitments,
