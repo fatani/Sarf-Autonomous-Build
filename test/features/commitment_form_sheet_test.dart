@@ -7,6 +7,8 @@ import 'package:sarf/core/domain/models.dart';
 import 'package:sarf/features/commitments/presentation/commitment_form_sheet.dart';
 import 'package:sarf/l10n/app_localizations.dart';
 
+import '../test_helpers.dart';
+
 class _TestSettingsNotifier extends SettingsNotifier {
   _TestSettingsNotifier(this.settings);
 
@@ -17,7 +19,11 @@ class _TestSettingsNotifier extends SettingsNotifier {
 }
 
 void main() {
-  Future<void> pumpForm(WidgetTester tester, {String defaultCurrency = 'SAR'}) async {
+  Future<void> pumpForm(
+    WidgetTester tester, {
+    String defaultCurrency = 'SAR',
+    List<PaymentCardModel> cards = const [],
+  }) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -29,6 +35,9 @@ void main() {
                 defaultCurrency: defaultCurrency,
               ),
             ),
+          ),
+          activePaymentCardsProvider.overrideWith(
+            (ref) => Stream.value(cards),
           ),
         ],
         child: MaterialApp(
@@ -73,5 +82,22 @@ void main() {
 
     expect(find.text('Paid amount in SAR'), findsOneWidget);
     expect(find.text('Exchange rate'), findsNothing);
+  });
+
+  testWidgets('commitment form can select card from dropdown', (tester) async {
+    await pumpForm(
+      tester,
+      cards: [testPaymentCard(id: 'card-select', last4: '4774')],
+    );
+
+    expect(find.text('Card'), findsWidgets);
+
+    final dropdowns = find.byType(DropdownButtonFormField<String>);
+    await tester.tap(dropdowns.last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.textContaining('4774').last);
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('4774'), findsWidgets);
   });
 }

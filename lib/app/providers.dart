@@ -16,12 +16,17 @@ final crashLogServiceProvider = Provider<CrashLogService>((ref) {
   return CrashLogService();
 });
 
+final paymentCardRepositoryProvider = Provider<PaymentCardRepository>((ref) {
+  return PaymentCardRepository(ref.watch(appDatabaseProvider));
+});
+
 final backupServiceProvider = Provider<BackupService>((ref) {
   return BackupService(
     ref.watch(commitmentRepositoryProvider),
     ref.watch(templateRepositoryProvider),
     ref.watch(settingsRepositoryProvider),
     ref.watch(notificationScheduleRepositoryProvider),
+    ref.watch(paymentCardRepositoryProvider),
   );
 });
 
@@ -131,8 +136,19 @@ final templatesProvider = StreamProvider<List<ServiceTemplateModel>>((ref) {
   return ref.watch(templateRepositoryProvider).watchTemplates();
 });
 
+final paymentCardsProvider = StreamProvider<List<PaymentCardModel>>((ref) {
+  ref.watch(appBootstrapProvider);
+  return ref.watch(paymentCardRepositoryProvider).watchCards(includeArchived: true);
+});
+
+final activePaymentCardsProvider = StreamProvider<List<PaymentCardModel>>((ref) {
+  ref.watch(appBootstrapProvider);
+  return ref.watch(paymentCardRepositoryProvider).watchCards();
+});
+
 final insightsProvider = Provider<AsyncValue<InsightsSummary>>((ref) {
   final commitments = ref.watch(commitmentsProvider);
+  final cards = ref.watch(paymentCardsProvider);
   final settings = ref.watch(settingsProvider);
 
   return commitments.when(
@@ -141,9 +157,11 @@ final insightsProvider = Provider<AsyncValue<InsightsSummary>>((ref) {
         data: (value) => value.defaultCurrency,
         orElse: () => 'SAR',
       );
+      final cardList = cards.maybeWhen(data: (value) => value, orElse: () => const <PaymentCardModel>[]);
       return AsyncData(
         ref.watch(insightsServiceProvider).calculate(
               commitments: items,
+              cards: cardList,
               defaultCurrency: currency,
             ),
       );

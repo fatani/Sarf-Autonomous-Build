@@ -20,6 +20,23 @@ class Commitments extends Table {
   RealColumn get exchangeRate => real().nullable()();
   TextColumn get paymentMethod => text().withDefault(const Constant('card'))();
   TextColumn get paymentSourceLabel => text().nullable()();
+  TextColumn get cardId => text().nullable()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+class PaymentCards extends Table {
+  TextColumn get id => text()();
+  TextColumn get network => text()();
+  TextColumn get bankName => text()();
+  TextColumn get cardTier => text().nullable()();
+  TextColumn get last4 => text().nullable()();
+  TextColumn get nickname => text().nullable()();
+  BoolColumn get isArchived => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+  DateTimeColumn get updatedAt => dateTime()();
+  DateTimeColumn get archivedAt => dateTime().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

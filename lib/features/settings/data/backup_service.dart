@@ -21,18 +21,21 @@ class BackupService {
     this._templateRepository,
     this._settingsRepository,
     this._notificationScheduleRepository,
+    this._paymentCardRepository,
   );
 
   final CommitmentRepository _commitmentRepository;
   final TemplateRepository _templateRepository;
   final SettingsRepository _settingsRepository;
   final NotificationScheduleRepository _notificationScheduleRepository;
+  final PaymentCardRepository _paymentCardRepository;
 
   Future<Map<String, dynamic>> exportBackup() async {
     final commitments = await _commitmentRepository.getAllCommitments();
     final customTemplates = await _templateRepository.getCustomTemplates();
     final settings = await _settingsRepository.getRawSettings();
     final schedules = await _notificationScheduleRepository.getAll();
+    final cards = await _paymentCardRepository.getAllCards();
 
     return {
       'appName': AppConstants.appName,
@@ -44,6 +47,7 @@ class BackupService {
         'customTemplates': customTemplates.map(_templateToJson).toList(),
         'settings': settings,
         'notificationSchedules': schedules.map(_scheduleToJson).toList(),
+        'paymentCards': cards.map(_cardToJson).toList(),
       },
     };
   }
@@ -70,7 +74,6 @@ class BackupService {
     return BackupImportResult.success;
   }
 
-  /// Full restore: replaces commitments, custom templates, settings, and schedules.
   Future<BackupImportResult> restoreBackup(String jsonContent) async {
     final Map<String, dynamic> backup;
     try {
@@ -90,11 +93,13 @@ class BackupService {
     final settings = _parseSettings(data['settings']);
     settings['onboarding_completed'] = 'true';
     final schedules = _parseSchedules(data['notificationSchedules']);
+    final cards = _parseCards(data['paymentCards']);
 
     await _commitmentRepository.replaceAll(commitments);
     await _templateRepository.replaceCustomTemplates(customTemplates);
     await _settingsRepository.replaceRawSettings(settings);
     await _notificationScheduleRepository.replaceAll(schedules);
+    await _paymentCardRepository.replaceAll(cards);
 
     return BackupImportResult.success;
   }
@@ -109,6 +114,7 @@ class BackupService {
         if (c.exchangeRate != null) 'exchangeRate': c.exchangeRate,
         'paymentMethod': c.paymentMethod.storageKey,
         if (c.paymentSourceLabel != null) 'paymentSourceLabel': c.paymentSourceLabel,
+        if (c.cardId != null) 'cardId': c.cardId,
         'billingCycle': c.billingCycle.storageKey,
         'category': c.category.storageKey,
         'nextDueDate': c.nextDueDate.toUtc().toIso8601String(),
@@ -140,6 +146,36 @@ class BackupService {
           : DateTime.parse(json['deletedAt'] as String),
       createdAt: DateTime.parse(json['createdAt'] as String),
       updatedAt: DateTime.parse(json['updatedAt'] as String),
+    );
+  }
+
+  Map<String, dynamic> _cardToJson(PaymentCardModel card) => {
+        'id': card.id,
+        'network': card.network.storageKey,
+        'bankName': card.bankName,
+        if (card.cardTier != null) 'cardTier': card.cardTier!.storageKey,
+        if (card.last4 != null) 'last4': card.last4,
+        if (card.nickname != null) 'nickname': card.nickname,
+        'isArchived': card.isArchived,
+        'createdAt': card.createdAt.toUtc().toIso8601String(),
+        'updatedAt': card.updatedAt.toUtc().toIso8601String(),
+        if (card.archivedAt != null) 'archivedAt': card.archivedAt!.toUtc().toIso8601String(),
+      };
+
+  PaymentCardModel _cardFromJson(Map<String, dynamic> json) {
+    return PaymentCardModel(
+      id: json['id'] as String,
+      network: CardNetwork.fromStorage(json['network'] as String?),
+      bankName: json['bankName'] as String,
+      cardTier: CardTier.fromStorage(json['cardTier'] as String?),
+      last4: json['last4'] as String?,
+      nickname: json['nickname'] as String?,
+      isArchived: json['isArchived'] as bool? ?? false,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+      archivedAt: json['archivedAt'] == null
+          ? null
+          : DateTime.parse(json['archivedAt'] as String),
     );
   }
 
@@ -203,6 +239,13 @@ class BackupService {
       return [];
     }
     return raw.whereType<Map<String, dynamic>>().map(_templateFromJson).toList();
+  }
+
+  List<PaymentCardModel> _parseCards(Object? raw) {
+    if (raw is! List) {
+      return [];
+    }
+    return raw.whereType<Map<String, dynamic>>().map(_cardFromJson).toList();
   }
 
   Map<String, String> _parseSettings(Object? raw) {

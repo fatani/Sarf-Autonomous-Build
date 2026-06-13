@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sarf/app/providers.dart';
 import 'package:sarf/app/router.dart';
 import 'package:sarf/core/utils/formatters.dart';
+import 'package:sarf/core/utils/payment_card_display.dart';
 import 'package:sarf/l10n/app_localizations.dart';
 
 class InsightsScreen extends ConsumerWidget {
@@ -65,6 +66,32 @@ class InsightsScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
+                ),
+              const SizedBox(height: 24),
+              Text(l10n.spendingByCard, style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 8),
+              if (summary.byCard.isEmpty)
+                Text(l10n.commitmentsEmptyTitle)
+              else
+                ...summary.byCard.map(
+                  (entry) {
+                    final cards = ref.watch(paymentCardsProvider).valueOrNull ?? [];
+                    final cardMap = {for (final item in cards) item.id: item};
+                    final card =
+                        entry.cardId != null ? cardMap[entry.cardId] : null;
+                    final title = card != null
+                        ? PaymentCardDisplay.shortLabel(card, l10n)
+                        : entry.fallbackLabel ?? '';
+                    return Card(
+                      child: ListTile(
+                        title: Text(title),
+                        subtitle: Text(l10n.cardCommitmentCount(entry.commitmentCount)),
+                        trailing: Text(
+                          Formatters.money(entry.monthlyTotal, summary.currency, locale),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               const SizedBox(height: 24),
               Text(l10n.byCategory, style: Theme.of(context).textTheme.titleMedium),

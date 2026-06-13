@@ -217,6 +217,15 @@ class $CommitmentsTable extends Commitments
         type: DriftSqlType.string,
         requiredDuringInsert: false,
       );
+  static const VerificationMeta _cardIdMeta = const VerificationMeta('cardId');
+  @override
+  late final GeneratedColumn<String> cardId = GeneratedColumn<String>(
+    'card_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -238,6 +247,7 @@ class $CommitmentsTable extends Commitments
     exchangeRate,
     paymentMethod,
     paymentSourceLabel,
+    cardId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -404,6 +414,12 @@ class $CommitmentsTable extends Commitments
         ),
       );
     }
+    if (data.containsKey('card_id')) {
+      context.handle(
+        _cardIdMeta,
+        cardId.isAcceptableOrUnknown(data['card_id']!, _cardIdMeta),
+      );
+    }
     return context;
   }
 
@@ -489,6 +505,10 @@ class $CommitmentsTable extends Commitments
         DriftSqlType.string,
         data['${effectivePrefix}payment_source_label'],
       ),
+      cardId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}card_id'],
+      ),
     );
   }
 
@@ -518,6 +538,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
   final double? exchangeRate;
   final String paymentMethod;
   final String? paymentSourceLabel;
+  final String? cardId;
   const Commitment({
     required this.id,
     required this.name,
@@ -538,6 +559,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     this.exchangeRate,
     required this.paymentMethod,
     this.paymentSourceLabel,
+    this.cardId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -572,6 +594,9 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     map['payment_method'] = Variable<String>(paymentMethod);
     if (!nullToAbsent || paymentSourceLabel != null) {
       map['payment_source_label'] = Variable<String>(paymentSourceLabel);
+    }
+    if (!nullToAbsent || cardId != null) {
+      map['card_id'] = Variable<String>(cardId);
     }
     return map;
   }
@@ -609,6 +634,9 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       paymentSourceLabel: paymentSourceLabel == null && nullToAbsent
           ? const Value.absent()
           : Value(paymentSourceLabel),
+      cardId: cardId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cardId),
     );
   }
 
@@ -641,6 +669,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       paymentSourceLabel: serializer.fromJson<String?>(
         json['paymentSourceLabel'],
       ),
+      cardId: serializer.fromJson<String?>(json['cardId']),
     );
   }
   @override
@@ -666,6 +695,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       'exchangeRate': serializer.toJson<double?>(exchangeRate),
       'paymentMethod': serializer.toJson<String>(paymentMethod),
       'paymentSourceLabel': serializer.toJson<String?>(paymentSourceLabel),
+      'cardId': serializer.toJson<String?>(cardId),
     };
   }
 
@@ -689,6 +719,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     Value<double?> exchangeRate = const Value.absent(),
     String? paymentMethod,
     Value<String?> paymentSourceLabel = const Value.absent(),
+    Value<String?> cardId = const Value.absent(),
   }) => Commitment(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -713,6 +744,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     paymentSourceLabel: paymentSourceLabel.present
         ? paymentSourceLabel.value
         : this.paymentSourceLabel,
+    cardId: cardId.present ? cardId.value : this.cardId,
   );
   Commitment copyWithCompanion(CommitmentsCompanion data) {
     return Commitment(
@@ -753,6 +785,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       paymentSourceLabel: data.paymentSourceLabel.present
           ? data.paymentSourceLabel.value
           : this.paymentSourceLabel,
+      cardId: data.cardId.present ? data.cardId.value : this.cardId,
     );
   }
 
@@ -777,7 +810,8 @@ class Commitment extends DataClass implements Insertable<Commitment> {
           ..write('paidReportingAmount: $paidReportingAmount, ')
           ..write('exchangeRate: $exchangeRate, ')
           ..write('paymentMethod: $paymentMethod, ')
-          ..write('paymentSourceLabel: $paymentSourceLabel')
+          ..write('paymentSourceLabel: $paymentSourceLabel, ')
+          ..write('cardId: $cardId')
           ..write(')'))
         .toString();
   }
@@ -803,6 +837,7 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     exchangeRate,
     paymentMethod,
     paymentSourceLabel,
+    cardId,
   );
   @override
   bool operator ==(Object other) =>
@@ -826,7 +861,8 @@ class Commitment extends DataClass implements Insertable<Commitment> {
           other.paidReportingAmount == this.paidReportingAmount &&
           other.exchangeRate == this.exchangeRate &&
           other.paymentMethod == this.paymentMethod &&
-          other.paymentSourceLabel == this.paymentSourceLabel);
+          other.paymentSourceLabel == this.paymentSourceLabel &&
+          other.cardId == this.cardId);
 }
 
 class CommitmentsCompanion extends UpdateCompanion<Commitment> {
@@ -849,6 +885,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
   final Value<double?> exchangeRate;
   final Value<String> paymentMethod;
   final Value<String?> paymentSourceLabel;
+  final Value<String?> cardId;
   final Value<int> rowid;
   const CommitmentsCompanion({
     this.id = const Value.absent(),
@@ -870,6 +907,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     this.exchangeRate = const Value.absent(),
     this.paymentMethod = const Value.absent(),
     this.paymentSourceLabel = const Value.absent(),
+    this.cardId = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CommitmentsCompanion.insert({
@@ -892,6 +930,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     this.exchangeRate = const Value.absent(),
     this.paymentMethod = const Value.absent(),
     this.paymentSourceLabel = const Value.absent(),
+    this.cardId = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -922,6 +961,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     Expression<double>? exchangeRate,
     Expression<String>? paymentMethod,
     Expression<String>? paymentSourceLabel,
+    Expression<String>? cardId,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -947,6 +987,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
       if (paymentMethod != null) 'payment_method': paymentMethod,
       if (paymentSourceLabel != null)
         'payment_source_label': paymentSourceLabel,
+      if (cardId != null) 'card_id': cardId,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -971,6 +1012,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     Value<double?>? exchangeRate,
     Value<String>? paymentMethod,
     Value<String?>? paymentSourceLabel,
+    Value<String?>? cardId,
     Value<int>? rowid,
   }) {
     return CommitmentsCompanion(
@@ -993,6 +1035,7 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
       exchangeRate: exchangeRate ?? this.exchangeRate,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       paymentSourceLabel: paymentSourceLabel ?? this.paymentSourceLabel,
+      cardId: cardId ?? this.cardId,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1059,6 +1102,9 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     if (paymentSourceLabel.present) {
       map['payment_source_label'] = Variable<String>(paymentSourceLabel.value);
     }
+    if (cardId.present) {
+      map['card_id'] = Variable<String>(cardId.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1087,6 +1133,622 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
           ..write('exchangeRate: $exchangeRate, ')
           ..write('paymentMethod: $paymentMethod, ')
           ..write('paymentSourceLabel: $paymentSourceLabel, ')
+          ..write('cardId: $cardId, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $PaymentCardsTable extends PaymentCards
+    with TableInfo<$PaymentCardsTable, PaymentCard> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $PaymentCardsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _networkMeta = const VerificationMeta(
+    'network',
+  );
+  @override
+  late final GeneratedColumn<String> network = GeneratedColumn<String>(
+    'network',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _bankNameMeta = const VerificationMeta(
+    'bankName',
+  );
+  @override
+  late final GeneratedColumn<String> bankName = GeneratedColumn<String>(
+    'bank_name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _cardTierMeta = const VerificationMeta(
+    'cardTier',
+  );
+  @override
+  late final GeneratedColumn<String> cardTier = GeneratedColumn<String>(
+    'card_tier',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _last4Meta = const VerificationMeta('last4');
+  @override
+  late final GeneratedColumn<String> last4 = GeneratedColumn<String>(
+    'last4',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _nicknameMeta = const VerificationMeta(
+    'nickname',
+  );
+  @override
+  late final GeneratedColumn<String> nickname = GeneratedColumn<String>(
+    'nickname',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isArchivedMeta = const VerificationMeta(
+    'isArchived',
+  );
+  @override
+  late final GeneratedColumn<bool> isArchived = GeneratedColumn<bool>(
+    'is_archived',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_archived" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _archivedAtMeta = const VerificationMeta(
+    'archivedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> archivedAt = GeneratedColumn<DateTime>(
+    'archived_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    network,
+    bankName,
+    cardTier,
+    last4,
+    nickname,
+    isArchived,
+    createdAt,
+    updatedAt,
+    archivedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'payment_cards';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<PaymentCard> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('network')) {
+      context.handle(
+        _networkMeta,
+        network.isAcceptableOrUnknown(data['network']!, _networkMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_networkMeta);
+    }
+    if (data.containsKey('bank_name')) {
+      context.handle(
+        _bankNameMeta,
+        bankName.isAcceptableOrUnknown(data['bank_name']!, _bankNameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_bankNameMeta);
+    }
+    if (data.containsKey('card_tier')) {
+      context.handle(
+        _cardTierMeta,
+        cardTier.isAcceptableOrUnknown(data['card_tier']!, _cardTierMeta),
+      );
+    }
+    if (data.containsKey('last4')) {
+      context.handle(
+        _last4Meta,
+        last4.isAcceptableOrUnknown(data['last4']!, _last4Meta),
+      );
+    }
+    if (data.containsKey('nickname')) {
+      context.handle(
+        _nicknameMeta,
+        nickname.isAcceptableOrUnknown(data['nickname']!, _nicknameMeta),
+      );
+    }
+    if (data.containsKey('is_archived')) {
+      context.handle(
+        _isArchivedMeta,
+        isArchived.isAcceptableOrUnknown(data['is_archived']!, _isArchivedMeta),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    if (data.containsKey('archived_at')) {
+      context.handle(
+        _archivedAtMeta,
+        archivedAt.isAcceptableOrUnknown(data['archived_at']!, _archivedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  PaymentCard map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PaymentCard(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      network: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}network'],
+      )!,
+      bankName: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}bank_name'],
+      )!,
+      cardTier: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}card_tier'],
+      ),
+      last4: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}last4'],
+      ),
+      nickname: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}nickname'],
+      ),
+      isArchived: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_archived'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+      archivedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}archived_at'],
+      ),
+    );
+  }
+
+  @override
+  $PaymentCardsTable createAlias(String alias) {
+    return $PaymentCardsTable(attachedDatabase, alias);
+  }
+}
+
+class PaymentCard extends DataClass implements Insertable<PaymentCard> {
+  final String id;
+  final String network;
+  final String bankName;
+  final String? cardTier;
+  final String? last4;
+  final String? nickname;
+  final bool isArchived;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? archivedAt;
+  const PaymentCard({
+    required this.id,
+    required this.network,
+    required this.bankName,
+    this.cardTier,
+    this.last4,
+    this.nickname,
+    required this.isArchived,
+    required this.createdAt,
+    required this.updatedAt,
+    this.archivedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['network'] = Variable<String>(network);
+    map['bank_name'] = Variable<String>(bankName);
+    if (!nullToAbsent || cardTier != null) {
+      map['card_tier'] = Variable<String>(cardTier);
+    }
+    if (!nullToAbsent || last4 != null) {
+      map['last4'] = Variable<String>(last4);
+    }
+    if (!nullToAbsent || nickname != null) {
+      map['nickname'] = Variable<String>(nickname);
+    }
+    map['is_archived'] = Variable<bool>(isArchived);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    if (!nullToAbsent || archivedAt != null) {
+      map['archived_at'] = Variable<DateTime>(archivedAt);
+    }
+    return map;
+  }
+
+  PaymentCardsCompanion toCompanion(bool nullToAbsent) {
+    return PaymentCardsCompanion(
+      id: Value(id),
+      network: Value(network),
+      bankName: Value(bankName),
+      cardTier: cardTier == null && nullToAbsent
+          ? const Value.absent()
+          : Value(cardTier),
+      last4: last4 == null && nullToAbsent
+          ? const Value.absent()
+          : Value(last4),
+      nickname: nickname == null && nullToAbsent
+          ? const Value.absent()
+          : Value(nickname),
+      isArchived: Value(isArchived),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+      archivedAt: archivedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(archivedAt),
+    );
+  }
+
+  factory PaymentCard.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return PaymentCard(
+      id: serializer.fromJson<String>(json['id']),
+      network: serializer.fromJson<String>(json['network']),
+      bankName: serializer.fromJson<String>(json['bankName']),
+      cardTier: serializer.fromJson<String?>(json['cardTier']),
+      last4: serializer.fromJson<String?>(json['last4']),
+      nickname: serializer.fromJson<String?>(json['nickname']),
+      isArchived: serializer.fromJson<bool>(json['isArchived']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      archivedAt: serializer.fromJson<DateTime?>(json['archivedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'network': serializer.toJson<String>(network),
+      'bankName': serializer.toJson<String>(bankName),
+      'cardTier': serializer.toJson<String?>(cardTier),
+      'last4': serializer.toJson<String?>(last4),
+      'nickname': serializer.toJson<String?>(nickname),
+      'isArchived': serializer.toJson<bool>(isArchived),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'archivedAt': serializer.toJson<DateTime?>(archivedAt),
+    };
+  }
+
+  PaymentCard copyWith({
+    String? id,
+    String? network,
+    String? bankName,
+    Value<String?> cardTier = const Value.absent(),
+    Value<String?> last4 = const Value.absent(),
+    Value<String?> nickname = const Value.absent(),
+    bool? isArchived,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    Value<DateTime?> archivedAt = const Value.absent(),
+  }) => PaymentCard(
+    id: id ?? this.id,
+    network: network ?? this.network,
+    bankName: bankName ?? this.bankName,
+    cardTier: cardTier.present ? cardTier.value : this.cardTier,
+    last4: last4.present ? last4.value : this.last4,
+    nickname: nickname.present ? nickname.value : this.nickname,
+    isArchived: isArchived ?? this.isArchived,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+    archivedAt: archivedAt.present ? archivedAt.value : this.archivedAt,
+  );
+  PaymentCard copyWithCompanion(PaymentCardsCompanion data) {
+    return PaymentCard(
+      id: data.id.present ? data.id.value : this.id,
+      network: data.network.present ? data.network.value : this.network,
+      bankName: data.bankName.present ? data.bankName.value : this.bankName,
+      cardTier: data.cardTier.present ? data.cardTier.value : this.cardTier,
+      last4: data.last4.present ? data.last4.value : this.last4,
+      nickname: data.nickname.present ? data.nickname.value : this.nickname,
+      isArchived: data.isArchived.present
+          ? data.isArchived.value
+          : this.isArchived,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      archivedAt: data.archivedAt.present
+          ? data.archivedAt.value
+          : this.archivedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PaymentCard(')
+          ..write('id: $id, ')
+          ..write('network: $network, ')
+          ..write('bankName: $bankName, ')
+          ..write('cardTier: $cardTier, ')
+          ..write('last4: $last4, ')
+          ..write('nickname: $nickname, ')
+          ..write('isArchived: $isArchived, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('archivedAt: $archivedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    network,
+    bankName,
+    cardTier,
+    last4,
+    nickname,
+    isArchived,
+    createdAt,
+    updatedAt,
+    archivedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is PaymentCard &&
+          other.id == this.id &&
+          other.network == this.network &&
+          other.bankName == this.bankName &&
+          other.cardTier == this.cardTier &&
+          other.last4 == this.last4 &&
+          other.nickname == this.nickname &&
+          other.isArchived == this.isArchived &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt &&
+          other.archivedAt == this.archivedAt);
+}
+
+class PaymentCardsCompanion extends UpdateCompanion<PaymentCard> {
+  final Value<String> id;
+  final Value<String> network;
+  final Value<String> bankName;
+  final Value<String?> cardTier;
+  final Value<String?> last4;
+  final Value<String?> nickname;
+  final Value<bool> isArchived;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<DateTime?> archivedAt;
+  final Value<int> rowid;
+  const PaymentCardsCompanion({
+    this.id = const Value.absent(),
+    this.network = const Value.absent(),
+    this.bankName = const Value.absent(),
+    this.cardTier = const Value.absent(),
+    this.last4 = const Value.absent(),
+    this.nickname = const Value.absent(),
+    this.isArchived = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.archivedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  PaymentCardsCompanion.insert({
+    required String id,
+    required String network,
+    required String bankName,
+    this.cardTier = const Value.absent(),
+    this.last4 = const Value.absent(),
+    this.nickname = const Value.absent(),
+    this.isArchived = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.archivedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       network = Value(network),
+       bankName = Value(bankName),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<PaymentCard> custom({
+    Expression<String>? id,
+    Expression<String>? network,
+    Expression<String>? bankName,
+    Expression<String>? cardTier,
+    Expression<String>? last4,
+    Expression<String>? nickname,
+    Expression<bool>? isArchived,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<DateTime>? archivedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (network != null) 'network': network,
+      if (bankName != null) 'bank_name': bankName,
+      if (cardTier != null) 'card_tier': cardTier,
+      if (last4 != null) 'last4': last4,
+      if (nickname != null) 'nickname': nickname,
+      if (isArchived != null) 'is_archived': isArchived,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (archivedAt != null) 'archived_at': archivedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  PaymentCardsCompanion copyWith({
+    Value<String>? id,
+    Value<String>? network,
+    Value<String>? bankName,
+    Value<String?>? cardTier,
+    Value<String?>? last4,
+    Value<String?>? nickname,
+    Value<bool>? isArchived,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<DateTime?>? archivedAt,
+    Value<int>? rowid,
+  }) {
+    return PaymentCardsCompanion(
+      id: id ?? this.id,
+      network: network ?? this.network,
+      bankName: bankName ?? this.bankName,
+      cardTier: cardTier ?? this.cardTier,
+      last4: last4 ?? this.last4,
+      nickname: nickname ?? this.nickname,
+      isArchived: isArchived ?? this.isArchived,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      archivedAt: archivedAt ?? this.archivedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (network.present) {
+      map['network'] = Variable<String>(network.value);
+    }
+    if (bankName.present) {
+      map['bank_name'] = Variable<String>(bankName.value);
+    }
+    if (cardTier.present) {
+      map['card_tier'] = Variable<String>(cardTier.value);
+    }
+    if (last4.present) {
+      map['last4'] = Variable<String>(last4.value);
+    }
+    if (nickname.present) {
+      map['nickname'] = Variable<String>(nickname.value);
+    }
+    if (isArchived.present) {
+      map['is_archived'] = Variable<bool>(isArchived.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (archivedAt.present) {
+      map['archived_at'] = Variable<DateTime>(archivedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PaymentCardsCompanion(')
+          ..write('id: $id, ')
+          ..write('network: $network, ')
+          ..write('bankName: $bankName, ')
+          ..write('cardTier: $cardTier, ')
+          ..write('last4: $last4, ')
+          ..write('nickname: $nickname, ')
+          ..write('isArchived: $isArchived, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('archivedAt: $archivedAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2468,6 +3130,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CommitmentsTable commitments = $CommitmentsTable(this);
+  late final $PaymentCardsTable paymentCards = $PaymentCardsTable(this);
   late final $ServiceTemplatesTable serviceTemplates = $ServiceTemplatesTable(
     this,
   );
@@ -2481,6 +3144,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     commitments,
+    paymentCards,
     serviceTemplates,
     appSettings,
     notificationSchedules,
@@ -2512,6 +3176,7 @@ typedef $$CommitmentsTableCreateCompanionBuilder =
       Value<double?> exchangeRate,
       Value<String> paymentMethod,
       Value<String?> paymentSourceLabel,
+      Value<String?> cardId,
       Value<int> rowid,
     });
 typedef $$CommitmentsTableUpdateCompanionBuilder =
@@ -2535,6 +3200,7 @@ typedef $$CommitmentsTableUpdateCompanionBuilder =
       Value<double?> exchangeRate,
       Value<String> paymentMethod,
       Value<String?> paymentSourceLabel,
+      Value<String?> cardId,
       Value<int> rowid,
     });
 
@@ -2639,6 +3305,11 @@ class $$CommitmentsTableFilterComposer
 
   ColumnFilters<String> get paymentSourceLabel => $composableBuilder(
     column: $table.paymentSourceLabel,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cardId => $composableBuilder(
+    column: $table.cardId,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2746,6 +3417,11 @@ class $$CommitmentsTableOrderingComposer
     column: $table.paymentSourceLabel,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get cardId => $composableBuilder(
+    column: $table.cardId,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CommitmentsTableAnnotationComposer
@@ -2831,6 +3507,9 @@ class $$CommitmentsTableAnnotationComposer
     column: $table.paymentSourceLabel,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get cardId =>
+      $composableBuilder(column: $table.cardId, builder: (column) => column);
 }
 
 class $$CommitmentsTableTableManager
@@ -2883,6 +3562,7 @@ class $$CommitmentsTableTableManager
                 Value<double?> exchangeRate = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
                 Value<String?> paymentSourceLabel = const Value.absent(),
+                Value<String?> cardId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CommitmentsCompanion(
                 id: id,
@@ -2904,6 +3584,7 @@ class $$CommitmentsTableTableManager
                 exchangeRate: exchangeRate,
                 paymentMethod: paymentMethod,
                 paymentSourceLabel: paymentSourceLabel,
+                cardId: cardId,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2927,6 +3608,7 @@ class $$CommitmentsTableTableManager
                 Value<double?> exchangeRate = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
                 Value<String?> paymentSourceLabel = const Value.absent(),
+                Value<String?> cardId = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CommitmentsCompanion.insert(
                 id: id,
@@ -2948,6 +3630,7 @@ class $$CommitmentsTableTableManager
                 exchangeRate: exchangeRate,
                 paymentMethod: paymentMethod,
                 paymentSourceLabel: paymentSourceLabel,
+                cardId: cardId,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -2973,6 +3656,305 @@ typedef $$CommitmentsTableProcessedTableManager =
         BaseReferences<_$AppDatabase, $CommitmentsTable, Commitment>,
       ),
       Commitment,
+      PrefetchHooks Function()
+    >;
+typedef $$PaymentCardsTableCreateCompanionBuilder =
+    PaymentCardsCompanion Function({
+      required String id,
+      required String network,
+      required String bankName,
+      Value<String?> cardTier,
+      Value<String?> last4,
+      Value<String?> nickname,
+      Value<bool> isArchived,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<DateTime?> archivedAt,
+      Value<int> rowid,
+    });
+typedef $$PaymentCardsTableUpdateCompanionBuilder =
+    PaymentCardsCompanion Function({
+      Value<String> id,
+      Value<String> network,
+      Value<String> bankName,
+      Value<String?> cardTier,
+      Value<String?> last4,
+      Value<String?> nickname,
+      Value<bool> isArchived,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<DateTime?> archivedAt,
+      Value<int> rowid,
+    });
+
+class $$PaymentCardsTableFilterComposer
+    extends Composer<_$AppDatabase, $PaymentCardsTable> {
+  $$PaymentCardsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get network => $composableBuilder(
+    column: $table.network,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get bankName => $composableBuilder(
+    column: $table.bankName,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get cardTier => $composableBuilder(
+    column: $table.cardTier,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get last4 => $composableBuilder(
+    column: $table.last4,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get nickname => $composableBuilder(
+    column: $table.nickname,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$PaymentCardsTableOrderingComposer
+    extends Composer<_$AppDatabase, $PaymentCardsTable> {
+  $$PaymentCardsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get network => $composableBuilder(
+    column: $table.network,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get bankName => $composableBuilder(
+    column: $table.bankName,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get cardTier => $composableBuilder(
+    column: $table.cardTier,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get last4 => $composableBuilder(
+    column: $table.last4,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get nickname => $composableBuilder(
+    column: $table.nickname,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$PaymentCardsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $PaymentCardsTable> {
+  $$PaymentCardsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get network =>
+      $composableBuilder(column: $table.network, builder: (column) => column);
+
+  GeneratedColumn<String> get bankName =>
+      $composableBuilder(column: $table.bankName, builder: (column) => column);
+
+  GeneratedColumn<String> get cardTier =>
+      $composableBuilder(column: $table.cardTier, builder: (column) => column);
+
+  GeneratedColumn<String> get last4 =>
+      $composableBuilder(column: $table.last4, builder: (column) => column);
+
+  GeneratedColumn<String> get nickname =>
+      $composableBuilder(column: $table.nickname, builder: (column) => column);
+
+  GeneratedColumn<bool> get isArchived => $composableBuilder(
+    column: $table.isArchived,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get archivedAt => $composableBuilder(
+    column: $table.archivedAt,
+    builder: (column) => column,
+  );
+}
+
+class $$PaymentCardsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $PaymentCardsTable,
+          PaymentCard,
+          $$PaymentCardsTableFilterComposer,
+          $$PaymentCardsTableOrderingComposer,
+          $$PaymentCardsTableAnnotationComposer,
+          $$PaymentCardsTableCreateCompanionBuilder,
+          $$PaymentCardsTableUpdateCompanionBuilder,
+          (
+            PaymentCard,
+            BaseReferences<_$AppDatabase, $PaymentCardsTable, PaymentCard>,
+          ),
+          PaymentCard,
+          PrefetchHooks Function()
+        > {
+  $$PaymentCardsTableTableManager(_$AppDatabase db, $PaymentCardsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$PaymentCardsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$PaymentCardsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$PaymentCardsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<String> id = const Value.absent(),
+                Value<String> network = const Value.absent(),
+                Value<String> bankName = const Value.absent(),
+                Value<String?> cardTier = const Value.absent(),
+                Value<String?> last4 = const Value.absent(),
+                Value<String?> nickname = const Value.absent(),
+                Value<bool> isArchived = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<DateTime?> archivedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PaymentCardsCompanion(
+                id: id,
+                network: network,
+                bankName: bankName,
+                cardTier: cardTier,
+                last4: last4,
+                nickname: nickname,
+                isArchived: isArchived,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                archivedAt: archivedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                required String id,
+                required String network,
+                required String bankName,
+                Value<String?> cardTier = const Value.absent(),
+                Value<String?> last4 = const Value.absent(),
+                Value<String?> nickname = const Value.absent(),
+                Value<bool> isArchived = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<DateTime?> archivedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => PaymentCardsCompanion.insert(
+                id: id,
+                network: network,
+                bankName: bankName,
+                cardTier: cardTier,
+                last4: last4,
+                nickname: nickname,
+                isArchived: isArchived,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                archivedAt: archivedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$PaymentCardsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $PaymentCardsTable,
+      PaymentCard,
+      $$PaymentCardsTableFilterComposer,
+      $$PaymentCardsTableOrderingComposer,
+      $$PaymentCardsTableAnnotationComposer,
+      $$PaymentCardsTableCreateCompanionBuilder,
+      $$PaymentCardsTableUpdateCompanionBuilder,
+      (
+        PaymentCard,
+        BaseReferences<_$AppDatabase, $PaymentCardsTable, PaymentCard>,
+      ),
+      PaymentCard,
       PrefetchHooks Function()
     >;
 typedef $$ServiceTemplatesTableCreateCompanionBuilder =
@@ -3770,6 +4752,8 @@ class $AppDatabaseManager {
   $AppDatabaseManager(this._db);
   $$CommitmentsTableTableManager get commitments =>
       $$CommitmentsTableTableManager(_db, _db.commitments);
+  $$PaymentCardsTableTableManager get paymentCards =>
+      $$PaymentCardsTableTableManager(_db, _db.paymentCards);
   $$ServiceTemplatesTableTableManager get serviceTemplates =>
       $$ServiceTemplatesTableTableManager(_db, _db.serviceTemplates);
   $$AppSettingsTableTableManager get appSettings =>

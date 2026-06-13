@@ -61,6 +61,48 @@ enum PaymentMethod {
   }
 }
 
+enum CardNetwork {
+  visa,
+  mastercard,
+  mada,
+  amex,
+  other;
+
+  String get storageKey => name;
+
+  static CardNetwork fromStorage(String? value) {
+    if (value == null) {
+      return CardNetwork.other;
+    }
+    return CardNetwork.values.firstWhere(
+      (network) => network.name == value,
+      orElse: () => CardNetwork.other,
+    );
+  }
+}
+
+enum CardTier {
+  classic,
+  platinum,
+  signature,
+  infinite,
+  world,
+  worldElite,
+  other;
+
+  String get storageKey => name;
+
+  static CardTier? fromStorage(String? value) {
+    if (value == null) {
+      return null;
+    }
+    return CardTier.values.firstWhere(
+      (tier) => tier.name == value,
+      orElse: () => CardTier.other,
+    );
+  }
+}
+
 enum AppLocalePreference {
   system,
   en,

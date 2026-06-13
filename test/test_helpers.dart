@@ -16,6 +16,7 @@ CommitmentModel testCommitment({
   double? exchangeRate,
   PaymentMethod paymentMethod = PaymentMethod.card,
   String? paymentSourceLabel,
+  String? cardId,
   bool isPaused = false,
   DateTime? deletedAt,
 }) {
@@ -40,7 +41,31 @@ CommitmentModel testCommitment({
         (currency == reporting || amount <= 0 ? 1.0 : paid / amount),
     paymentMethod: paymentMethod,
     paymentSourceLabel: paymentSourceLabel,
+    cardId: cardId,
     isPaused: isPaused,
     deletedAt: deletedAt,
+  );
+}
+
+PaymentCardModel testPaymentCard({
+  String id = 'card-1',
+  CardNetwork network = CardNetwork.visa,
+  String bankName = 'Al Rajhi',
+  CardTier? cardTier = CardTier.infinite,
+  String? last4 = '1331',
+  bool isArchived = false,
+  DateTime? createdAt,
+}) {
+  final now = createdAt ?? DateTime.utc(2026, 1, 1);
+  return PaymentCardModel(
+    id: id,
+    network: network,
+    bankName: bankName,
+    cardTier: cardTier,
+    last4: last4,
+    createdAt: now,
+    updatedAt: now,
+    isArchived: isArchived,
+    archivedAt: isArchived ? now : null,
   );
 }

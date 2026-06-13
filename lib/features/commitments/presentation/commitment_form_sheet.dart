@@ -6,6 +6,7 @@ import 'package:sarf/core/domain/enums.dart';
 import 'package:sarf/core/domain/models.dart';
 import 'package:sarf/core/utils/commitment_currency.dart';
 import 'package:sarf/core/utils/formatters.dart';
+import 'package:sarf/features/cards/presentation/card_picker_field.dart';
 import 'package:sarf/features/commitments/application/commitment_actions.dart';
 import 'package:sarf/l10n/app_localizations.dart';
 
@@ -36,6 +37,7 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
   int? _reminderDaysBefore;
   late String _currency;
   late PaymentMethod _paymentMethod;
+  String? _selectedCardId;
   var _currencyInitialized = false;
 
   @override
@@ -65,6 +67,7 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
         template?.defaultCurrency ??
         AppConstants.defaultCurrency;
     _paymentMethod = existing?.paymentMethod ?? PaymentMethod.card;
+    _selectedCardId = existing?.cardId;
   }
 
   @override
@@ -191,32 +194,44 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
               const SizedBox(height: 16),
               Text(l10n.paymentSectionTitle, style: Theme.of(context).textTheme.titleSmall),
               const SizedBox(height: 8),
-              DropdownButtonFormField<PaymentMethod>(
-                key: ValueKey(_paymentMethod),
-                initialValue: _paymentMethod,
-                decoration: InputDecoration(labelText: l10n.paymentMethodLabel),
-                items: PaymentMethod.values
-                    .map(
-                      (method) => DropdownMenuItem(
-                        value: method,
-                        child: Text(Formatters.paymentMethodLabel(method, l10n)),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _paymentMethod = value);
+              CardPickerField(
+                selectedCardId: _selectedCardId,
+                onChanged: (cardId) => setState(() {
+                  _selectedCardId = cardId;
+                  if (cardId != null) {
+                    _paymentMethod = PaymentMethod.card;
                   }
-                },
+                }),
               ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _paymentSourceController,
-                decoration: InputDecoration(
-                  labelText: l10n.paymentSourceLabel,
-                  hintText: l10n.paymentSourceHint,
+              if (_selectedCardId == null) ...[
+                const SizedBox(height: 12),
+                DropdownButtonFormField<PaymentMethod>(
+                  key: ValueKey(_paymentMethod),
+                  initialValue: _paymentMethod,
+                  decoration: InputDecoration(labelText: l10n.paymentMethodLabel),
+                  items: PaymentMethod.values
+                      .map(
+                        (method) => DropdownMenuItem(
+                          value: method,
+                          child: Text(Formatters.paymentMethodLabel(method, l10n)),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() => _paymentMethod = value);
+                    }
+                  },
                 ),
-              ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _paymentSourceController,
+                  decoration: InputDecoration(
+                    labelText: l10n.paymentSourceLabel,
+                    hintText: l10n.paymentSourceHint,
+                  ),
+                ),
+              ],
               const SizedBox(height: 16),
               DropdownButtonFormField<BillingCycle>(
                 initialValue: _billingCycle,
@@ -322,9 +337,11 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
     }
 
     final existing = widget.existing;
-    final paymentSource = _paymentSourceController.text.trim();
+    final paymentSource =
+        _selectedCardId == null ? _paymentSourceController.text.trim() : '';
     final originalAmount = double.parse(_amountController.text.trim());
     final paidAmount = _parsedPaidAmount ?? originalAmount;
+    final paymentMethod = _selectedCardId != null ? PaymentMethod.card : _paymentMethod;
 
     final draft = CommitmentModel(
       id: existing?.id ?? '',
@@ -343,8 +360,9 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
       updatedAt: existing?.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0),
       reportingCurrency: _reportingCurrency,
       paidReportingAmount: paidAmount,
-      paymentMethod: _paymentMethod,
+      paymentMethod: paymentMethod,
       paymentSourceLabel: paymentSource.isEmpty ? null : paymentSource,
+      cardId: _selectedCardId,
     );
 
     await ref.read(commitmentActionsProvider).createFromInput(

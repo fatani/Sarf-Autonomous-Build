@@ -466,4 +466,131 @@ class AppLocalizationsEn extends AppLocalizations {
   String paidBy(String source) {
     return 'Paid by: $source';
   }
+
+  @override
+  String get cardsSectionTitle => 'Cards';
+
+  @override
+  String get cardsSectionSubtitle => 'Manage reference payment cards';
+
+  @override
+  String get cardsEmptyHint =>
+      'Add a card to track where your subscriptions are charged.';
+
+  @override
+  String get addCard => 'Add card';
+
+  @override
+  String get editCard => 'Edit card';
+
+  @override
+  String get archiveCard => 'Archive card';
+
+  @override
+  String get cardNetworkSection => 'Card network';
+
+  @override
+  String get cardBankSection => 'Bank';
+
+  @override
+  String get cardTierSection => 'Card tier';
+
+  @override
+  String get cardPreviewLabel => 'Preview';
+
+  @override
+  String get last4DigitsLabel => 'Last 4 digits';
+
+  @override
+  String get invalidLast4 => 'Enter exactly 4 digits';
+
+  @override
+  String get customBankLabel => 'Bank name';
+
+  @override
+  String get commitmentCardLabel => 'Card';
+
+  @override
+  String get noCardSelected => 'No card';
+
+  @override
+  String get addNewCard => 'Add new card';
+
+  @override
+  String get commitmentCardHint =>
+      'Add a card to know where each commitment is paid from.';
+
+  @override
+  String get spendingByCard => 'Spending by card';
+
+  @override
+  String cardCommitmentCount(int count) {
+    return '$count commitments';
+  }
+
+  @override
+  String get cardNetworkVisa => 'Visa';
+
+  @override
+  String get cardNetworkMastercard => 'Mastercard';
+
+  @override
+  String get cardNetworkMada => 'Mada';
+
+  @override
+  String get cardNetworkAmex => 'Amex';
+
+  @override
+  String get cardNetworkOther => 'Other';
+
+  @override
+  String get cardTierClassic => 'Classic';
+
+  @override
+  String get cardTierPlatinum => 'Platinum';
+
+  @override
+  String get cardTierSignature => 'Signature';
+
+  @override
+  String get cardTierInfinite => 'Infinite';
+
+  @override
+  String get cardTierWorld => 'World';
+
+  @override
+  String get cardTierWorldElite => 'World Elite';
+
+  @override
+  String get cardTierOther => 'Other';
+
+  @override
+  String get bankAlRajhi => 'Al Rajhi';
+
+  @override
+  String get bankSnb => 'SNB';
+
+  @override
+  String get bankD360 => 'D360';
+
+  @override
+  String get bankSaudiInvestment => 'Saudi Investment Bank';
+
+  @override
+  String get bankStcPay => 'STC Pay';
+
+  @override
+  String get bankBarq => 'Barq';
+
+  @override
+  String get bankAlinma => 'Alinma';
+
+  @override
+  String get bankRiyad => 'Riyad Bank';
+
+  @override
+  String get bankSab => 'SAB';
+
+  @override
+  String get bankOther => 'Other';
 }

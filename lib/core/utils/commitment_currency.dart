@@ -57,6 +57,7 @@ abstract final class CommitmentCurrency {
       paymentMethod: paymentMethod ?? draft.paymentMethod,
       paymentSourceLabel:
           paymentSourceLabel != null ? paymentSourceLabel() : draft.paymentSourceLabel,
+      cardId: draft.cardId,
     );
   }
 
@@ -111,6 +112,7 @@ abstract final class CommitmentCurrency {
       exchangeRate: sameCurrency ? 1.0 : exchangeRate,
       paymentMethod: PaymentMethod.fromStorage(json['paymentMethod'] as String?),
       paymentSourceLabel: json['paymentSourceLabel'] as String?,
+      cardId: json['cardId'] as String?,
     );
   }
 }

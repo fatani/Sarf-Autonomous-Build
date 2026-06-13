@@ -947,6 +947,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Paid by: {source}'**
   String paidBy(String source);
+
+  /// No description provided for @cardsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards'**
+  String get cardsSectionTitle;
+
+  /// No description provided for @cardsSectionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage reference payment cards'**
+  String get cardsSectionSubtitle;
+
+  /// No description provided for @cardsEmptyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a card to track where your subscriptions are charged.'**
+  String get cardsEmptyHint;
+
+  /// No description provided for @addCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add card'**
+  String get addCard;
+
+  /// No description provided for @editCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit card'**
+  String get editCard;
+
+  /// No description provided for @archiveCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive card'**
+  String get archiveCard;
+
+  /// No description provided for @cardNetworkSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Card network'**
+  String get cardNetworkSection;
+
+  /// No description provided for @cardBankSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank'**
+  String get cardBankSection;
+
+  /// No description provided for @cardTierSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Card tier'**
+  String get cardTierSection;
+
+  /// No description provided for @cardPreviewLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get cardPreviewLabel;
+
+  /// No description provided for @last4DigitsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 4 digits'**
+  String get last4DigitsLabel;
+
+  /// No description provided for @invalidLast4.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter exactly 4 digits'**
+  String get invalidLast4;
+
+  /// No description provided for @customBankLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank name'**
+  String get customBankLabel;
+
+  /// No description provided for @commitmentCardLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get commitmentCardLabel;
+
+  /// No description provided for @noCardSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No card'**
+  String get noCardSelected;
+
+  /// No description provided for @addNewCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new card'**
+  String get addNewCard;
+
+  /// No description provided for @commitmentCardHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a card to know where each commitment is paid from.'**
+  String get commitmentCardHint;
+
+  /// No description provided for @spendingByCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Spending by card'**
+  String get spendingByCard;
+
+  /// No description provided for @cardCommitmentCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} commitments'**
+  String cardCommitmentCount(int count);
+
+  /// No description provided for @cardNetworkVisa.
+  ///
+  /// In en, this message translates to:
+  /// **'Visa'**
+  String get cardNetworkVisa;
+
+  /// No description provided for @cardNetworkMastercard.
+  ///
+  /// In en, this message translates to:
+  /// **'Mastercard'**
+  String get cardNetworkMastercard;
+
+  /// No description provided for @cardNetworkMada.
+  ///
+  /// In en, this message translates to:
+  /// **'Mada'**
+  String get cardNetworkMada;
+
+  /// No description provided for @cardNetworkAmex.
+  ///
+  /// In en, this message translates to:
+  /// **'Amex'**
+  String get cardNetworkAmex;
+
+  /// No description provided for @cardNetworkOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get cardNetworkOther;
+
+  /// No description provided for @cardTierClassic.
+  ///
+  /// In en, this message translates to:
+  /// **'Classic'**
+  String get cardTierClassic;
+
+  /// No description provided for @cardTierPlatinum.
+  ///
+  /// In en, this message translates to:
+  /// **'Platinum'**
+  String get cardTierPlatinum;
+
+  /// No description provided for @cardTierSignature.
+  ///
+  /// In en, this message translates to:
+  /// **'Signature'**
+  String get cardTierSignature;
+
+  /// No description provided for @cardTierInfinite.
+  ///
+  /// In en, this message translates to:
+  /// **'Infinite'**
+  String get cardTierInfinite;
+
+  /// No description provided for @cardTierWorld.
+  ///
+  /// In en, this message translates to:
+  /// **'World'**
+  String get cardTierWorld;
+
+  /// No description provided for @cardTierWorldElite.
+  ///
+  /// In en, this message translates to:
+  /// **'World Elite'**
+  String get cardTierWorldElite;
+
+  /// No description provided for @cardTierOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get cardTierOther;
+
+  /// No description provided for @bankAlRajhi.
+  ///
+  /// In en, this message translates to:
+  /// **'Al Rajhi'**
+  String get bankAlRajhi;
+
+  /// No description provided for @bankSnb.
+  ///
+  /// In en, this message translates to:
+  /// **'SNB'**
+  String get bankSnb;
+
+  /// No description provided for @bankD360.
+  ///
+  /// In en, this message translates to:
+  /// **'D360'**
+  String get bankD360;
+
+  /// No description provided for @bankSaudiInvestment.
+  ///
+  /// In en, this message translates to:
+  /// **'Saudi Investment Bank'**
+  String get bankSaudiInvestment;
+
+  /// No description provided for @bankStcPay.
+  ///
+  /// In en, this message translates to:
+  /// **'STC Pay'**
+  String get bankStcPay;
+
+  /// No description provided for @bankBarq.
+  ///
+  /// In en, this message translates to:
+  /// **'Barq'**
+  String get bankBarq;
+
+  /// No description provided for @bankAlinma.
+  ///
+  /// In en, this message translates to:
+  /// **'Alinma'**
+  String get bankAlinma;
+
+  /// No description provided for @bankRiyad.
+  ///
+  /// In en, this message translates to:
+  /// **'Riyad Bank'**
+  String get bankRiyad;
+
+  /// No description provided for @bankSab.
+  ///
+  /// In en, this message translates to:
+  /// **'SAB'**
+  String get bankSab;
+
+  /// No description provided for @bankOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get bankOther;
 }
 
 class _AppLocalizationsDelegate

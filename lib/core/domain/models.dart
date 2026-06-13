@@ -21,15 +21,12 @@ class CommitmentModel {
     this.exchangeRate,
     this.paymentMethod = PaymentMethod.card,
     this.paymentSourceLabel,
+    this.cardId,
   });
 
   final String id;
   final String name;
-
-  /// Original subscription amount (same as [originalAmount]).
   final double amount;
-
-  /// Original subscription currency (same as [originalCurrency]).
   final String currency;
   final BillingCycle billingCycle;
   final CommitmentCategory category;
@@ -42,14 +39,11 @@ class CommitmentModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final String reportingCurrency;
-
-  /// Actual amount charged in [reportingCurrency] (e.g. SAR deducted from card).
   final double paidReportingAmount;
-
-  /// Computed effective rate (paid / original). Stored for convenience, not user input.
   final double? exchangeRate;
   final PaymentMethod paymentMethod;
   final String? paymentSourceLabel;
+  final String? cardId;
 
   double get originalAmount => amount;
   String get originalCurrency => currency;
@@ -83,6 +77,7 @@ class CommitmentModel {
     double? Function()? exchangeRate,
     PaymentMethod? paymentMethod,
     String? Function()? paymentSourceLabel,
+    String? Function()? cardId,
   }) {
     return CommitmentModel(
       id: id,
@@ -106,8 +101,75 @@ class CommitmentModel {
       paymentMethod: paymentMethod ?? this.paymentMethod,
       paymentSourceLabel:
           paymentSourceLabel != null ? paymentSourceLabel() : this.paymentSourceLabel,
+      cardId: cardId != null ? cardId() : this.cardId,
     );
   }
+}
+
+class PaymentCardModel {
+  const PaymentCardModel({
+    required this.id,
+    required this.network,
+    required this.bankName,
+    this.cardTier,
+    this.last4,
+    this.nickname,
+    this.isArchived = false,
+    required this.createdAt,
+    required this.updatedAt,
+    this.archivedAt,
+  });
+
+  final String id;
+  final CardNetwork network;
+  final String bankName;
+  final CardTier? cardTier;
+  final String? last4;
+  final String? nickname;
+  final bool isArchived;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final DateTime? archivedAt;
+
+  PaymentCardModel copyWith({
+    CardNetwork? network,
+    String? bankName,
+    CardTier? Function()? cardTier,
+    String? Function()? last4,
+    String? Function()? nickname,
+    bool? isArchived,
+    DateTime? updatedAt,
+    DateTime? Function()? archivedAt,
+  }) {
+    return PaymentCardModel(
+      id: id,
+      network: network ?? this.network,
+      bankName: bankName ?? this.bankName,
+      cardTier: cardTier != null ? cardTier() : this.cardTier,
+      last4: last4 != null ? last4() : this.last4,
+      nickname: nickname != null ? nickname() : this.nickname,
+      isArchived: isArchived ?? this.isArchived,
+      createdAt: createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      archivedAt: archivedAt != null ? archivedAt() : this.archivedAt,
+    );
+  }
+}
+
+class CardSpendingSummary {
+  const CardSpendingSummary({
+    required this.monthlyTotal,
+    required this.commitmentCount,
+    this.cardId,
+    this.fallbackLabel,
+  });
+
+  final double monthlyTotal;
+  final int commitmentCount;
+  final String? cardId;
+  final String? fallbackLabel;
+
+  bool get isFallback => cardId == null && fallbackLabel != null;
 }
 
 class ServiceTemplateModel {
@@ -170,6 +232,7 @@ class InsightsSummary {
     required this.upcoming,
     required this.mostExpensive,
     required this.byCategory,
+    required this.byCard,
     required this.currency,
   });
 
@@ -179,6 +242,7 @@ class InsightsSummary {
   final List<CommitmentModel> upcoming;
   final List<CommitmentModel> mostExpensive;
   final Map<CommitmentCategory, double> byCategory;
+  final List<CardSpendingSummary> byCard;
   final String currency;
 }
 

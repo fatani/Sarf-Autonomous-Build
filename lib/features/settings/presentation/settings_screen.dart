@@ -89,6 +89,15 @@ class SettingsScreen extends ConsumerWidget {
                   .toList(),
             ),
             const SizedBox(height: 24),
+            Text(l10n.cardsSectionTitle, style: Theme.of(context).textTheme.titleMedium),
+            ListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.cardsSectionTitle),
+              subtitle: Text(l10n.cardsSectionSubtitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push(AppRoute.cards.path),
+            ),
+            const SizedBox(height: 24),
             Text(l10n.backupSection, style: Theme.of(context).textTheme.titleMedium),
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -227,6 +236,7 @@ class SettingsScreen extends ConsumerWidget {
       ref.invalidate(settingsProvider);
       ref.invalidate(commitmentsProvider);
       ref.invalidate(templatesProvider);
+      ref.invalidate(paymentCardsProvider);
       final updatedSettings = await ref.read(settingsProvider.future);
       await _rescheduleAll(ref, updatedSettings);
       if (!context.mounted) {

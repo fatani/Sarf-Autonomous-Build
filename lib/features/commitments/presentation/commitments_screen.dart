@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sarf/app/providers.dart';
 import 'package:sarf/core/domain/models.dart';
 import 'package:sarf/core/utils/formatters.dart';
+import 'package:sarf/core/utils/payment_card_display.dart';
 import 'package:sarf/features/commitments/application/commitment_actions.dart';
 import 'package:sarf/features/commitments/presentation/commitment_form_sheet.dart';
 import 'package:sarf/l10n/app_localizations.dart';
@@ -140,7 +141,7 @@ class CommitmentsScreen extends ConsumerWidget {
   }
 }
 
-class _CommitmentCard extends StatelessWidget {
+class _CommitmentCard extends ConsumerWidget {
   const _CommitmentCard({
     required this.commitment,
     required this.locale,
@@ -160,9 +161,18 @@ class _CommitmentCard extends StatelessWidget {
   final bool archived;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final cards = ref.watch(paymentCardsProvider).valueOrNull ?? [];
+    final cardMap = {for (final card in cards) card.id: card};
+    final linkedCard =
+        commitment.cardId != null ? cardMap[commitment.cardId] : null;
+    final paymentLine = PaymentCardDisplay.commitmentPaymentLine(
+      commitment: commitment,
+      card: linkedCard,
+      l10n: l10n,
+    );
     final days = DateUtilsSarf.daysUntil(commitment.nextDueDate, DateTime.now());
     final dueLabel = days < 0
         ? l10n.overdue
@@ -209,7 +219,7 @@ class _CommitmentCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (Formatters.paymentSourceLine(commitment, l10n) case final paymentLine?)
+              if (paymentLine != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(

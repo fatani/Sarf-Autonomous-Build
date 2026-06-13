@@ -82,6 +82,7 @@ void main() {
 
       final summary = service.calculate(
         commitments: commitments,
+        cards: const [],
         defaultCurrency: 'SAR',
         now: now,
       );
@@ -119,6 +120,7 @@ void main() {
 
       final summary = service.calculate(
         commitments: commitments,
+        cards: const [],
         defaultCurrency: 'SAR',
         now: now,
       );
@@ -154,6 +156,7 @@ void main() {
 
       final summary = service.calculate(
         commitments: commitments,
+        cards: const [],
         defaultCurrency: 'SAR',
         now: now,
       );
@@ -179,7 +182,7 @@ void main() {
         ),
       ];
 
-      final summary = service.calculate(commitments: commitments, defaultCurrency: 'SAR', now: now);
+      final summary = service.calculate(commitments: commitments, cards: const [], defaultCurrency: 'SAR', now: now);
       expect(summary.upcoming, hasLength(1));
       expect(summary.upcoming.single.name, 'Soon');
     });
@@ -207,9 +210,97 @@ void main() {
         ),
       ];
 
-      final summary = service.calculate(commitments: commitments, defaultCurrency: 'SAR', now: now);
+      final summary = service.calculate(commitments: commitments, cards: const [], defaultCurrency: 'SAR', now: now);
       expect(summary.activeCount, 1);
       expect(summary.monthlyTotal, 100);
+    });
+
+    test('spending by card uses paidReportingAmount', () {
+      final service = InsightsService();
+      final now = DateTime(2026, 6, 1);
+      final card = testPaymentCard(id: 'card-a', last4: '4774');
+      final commitments = [
+        testCommitment(
+          id: '1',
+          amount: 100,
+          paidReportingAmount: 100,
+          cardId: 'card-a',
+          nextDueDate: now,
+          createdAt: now,
+        ),
+        testCommitment(
+          id: '2',
+          name: 'USD sub',
+          amount: 20,
+          currency: 'USD',
+          reportingCurrency: 'SAR',
+          paidReportingAmount: 78.42,
+          cardId: 'card-a',
+          nextDueDate: now,
+          createdAt: now,
+        ),
+      ];
+
+      final summary = service.calculate(
+        commitments: commitments,
+        cards: [card],
+        defaultCurrency: 'SAR',
+        now: now,
+      );
+
+      expect(summary.byCard, hasLength(1));
+      expect(summary.byCard.single.cardId, 'card-a');
+      expect(summary.byCard.single.monthlyTotal, closeTo(178.42, 0.001));
+      expect(summary.byCard.single.commitmentCount, 2);
+    });
+
+    test('spending by card includes fallback paymentSourceLabel', () {
+      final service = InsightsService();
+      final now = DateTime(2026, 6, 1);
+      final commitments = [
+        testCommitment(
+          id: '1',
+          amount: 50,
+          paymentSourceLabel: 'Apple Pay',
+          nextDueDate: now,
+          createdAt: now,
+        ),
+      ];
+
+      final summary = service.calculate(
+        commitments: commitments,
+        cards: const [],
+        defaultCurrency: 'SAR',
+        now: now,
+      );
+
+      expect(summary.byCard.single.fallbackLabel, 'Apple Pay');
+      expect(summary.byCard.single.monthlyTotal, 50);
+    });
+
+    test('archived card commitments still count in spending by card', () {
+      final service = InsightsService();
+      final now = DateTime(2026, 6, 1);
+      final archivedCard = testPaymentCard(id: 'archived', isArchived: true);
+      final commitments = [
+        testCommitment(
+          id: '1',
+          amount: 200,
+          cardId: 'archived',
+          nextDueDate: now,
+          createdAt: now,
+        ),
+      ];
+
+      final summary = service.calculate(
+        commitments: commitments,
+        cards: [archivedCard],
+        defaultCurrency: 'SAR',
+        now: now,
+      );
+
+      expect(summary.byCard.single.cardId, 'archived');
+      expect(summary.byCard.single.monthlyTotal, 200);
     });
   });
 }

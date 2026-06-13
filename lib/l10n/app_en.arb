@@ -211,5 +211,51 @@
     "placeholders": {
       "source": {"type": "String"}
     }
-  }
+  },
+  "cardsSectionTitle": "Cards",
+  "cardsSectionSubtitle": "Manage reference payment cards",
+  "cardsEmptyHint": "Add a card to track where your subscriptions are charged.",
+  "addCard": "Add card",
+  "editCard": "Edit card",
+  "archiveCard": "Archive card",
+  "cardNetworkSection": "Card network",
+  "cardBankSection": "Bank",
+  "cardTierSection": "Card tier",
+  "cardPreviewLabel": "Preview",
+  "last4DigitsLabel": "Last 4 digits",
+  "invalidLast4": "Enter exactly 4 digits",
+  "customBankLabel": "Bank name",
+  "commitmentCardLabel": "Card",
+  "noCardSelected": "No card",
+  "addNewCard": "Add new card",
+  "commitmentCardHint": "Add a card to know where each commitment is paid from.",
+  "spendingByCard": "Spending by card",
+  "cardCommitmentCount": "{count} commitments",
+  "@cardCommitmentCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+  "cardNetworkVisa": "Visa",
+  "cardNetworkMastercard": "Mastercard",
+  "cardNetworkMada": "Mada",
+  "cardNetworkAmex": "Amex",
+  "cardNetworkOther": "Other",
+  "cardTierClassic": "Classic",
+  "cardTierPlatinum": "Platinum",
+  "cardTierSignature": "Signature",
+  "cardTierInfinite": "Infinite",
+  "cardTierWorld": "World",
+  "cardTierWorldElite": "World Elite",
+  "cardTierOther": "Other",
+  "bankAlRajhi": "Al Rajhi",
+  "bankSnb": "SNB",
+  "bankD360": "D360",
+  "bankSaudiInvestment": "Saudi Investment Bank",
+  "bankStcPay": "STC Pay",
+  "bankBarq": "Barq",
+  "bankAlinma": "Alinma",
+  "bankRiyad": "Riyad Bank",
+  "bankSab": "SAB",
+  "bankOther": "Other"
 }

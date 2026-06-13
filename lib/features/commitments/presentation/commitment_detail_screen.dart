@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:sarf/app/providers.dart';
 import 'package:sarf/core/domain/models.dart';
 import 'package:sarf/core/utils/formatters.dart';
+import 'package:sarf/core/utils/payment_card_display.dart';
 import 'package:sarf/features/commitments/application/commitment_actions.dart';
 import 'package:sarf/features/commitments/presentation/commitment_form_sheet.dart';
 import 'package:sarf/l10n/app_localizations.dart';
@@ -100,7 +101,7 @@ class CommitmentDetailScreen extends ConsumerWidget {
   }
 }
 
-class _DetailBody extends StatelessWidget {
+class _DetailBody extends ConsumerWidget {
   const _DetailBody({
     required this.commitment,
     required this.locale,
@@ -114,9 +115,18 @@ class _DetailBody extends StatelessWidget {
   final VoidCallback onDelete;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final theme = Theme.of(context);
+    final cards = ref.watch(paymentCardsProvider).valueOrNull ?? [];
+    final cardMap = {for (final card in cards) card.id: card};
+    final linkedCard =
+        commitment.cardId != null ? cardMap[commitment.cardId] : null;
+    final paymentLine = PaymentCardDisplay.commitmentPaymentLine(
+      commitment: commitment,
+      card: linkedCard,
+      l10n: l10n,
+    );
     final days = DateUtilsSarf.daysUntil(commitment.nextDueDate, DateTime.now());
     final dueLabel = days < 0
         ? l10n.overdue
@@ -139,7 +149,7 @@ class _DetailBody extends StatelessWidget {
                   Formatters.commitmentAmountLine(commitment, locale, l10n),
                   style: theme.textTheme.titleLarge,
                 ),
-                if (Formatters.paymentSourceLine(commitment, l10n) case final paymentLine?) ...[
+                if (paymentLine != null) ...[
                   const SizedBox(height: 8),
                   Text(
                     paymentLine,
@@ -166,7 +176,8 @@ class _DetailBody extends StatelessWidget {
           label: l10n.paymentMethodLabel,
           value: Formatters.paymentMethodLabel(commitment.paymentMethod, l10n),
         ),
-        if (commitment.paymentSourceLabel != null &&
+        if (linkedCard == null &&
+            commitment.paymentSourceLabel != null &&
             commitment.paymentSourceLabel!.trim().isNotEmpty)
           _DetailTile(label: l10n.paymentSourceLabel, value: commitment.paymentSourceLabel!),
         if (commitment.hasForeignCurrency) ...[

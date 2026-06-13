@@ -54,6 +54,7 @@ class CommitmentRepository {
             exchangeRate: Value(commitment.exchangeRate),
             paymentMethod: Value(commitment.paymentMethod.storageKey),
             paymentSourceLabel: Value(commitment.paymentSourceLabel),
+            cardId: Value(commitment.cardId),
           ),
         );
   }
@@ -130,6 +131,7 @@ class CommitmentRepository {
                     exchangeRate: Value(commitment.exchangeRate),
                     paymentMethod: Value(commitment.paymentMethod.storageKey),
                     paymentSourceLabel: Value(commitment.paymentSourceLabel),
+                    cardId: Value(commitment.cardId),
                   ),
                 )
                 .toList(),
@@ -168,6 +170,117 @@ class CommitmentRepository {
               : paidReportingAmount / row.amount),
       paymentMethod: PaymentMethod.fromStorage(row.paymentMethod),
       paymentSourceLabel: row.paymentSourceLabel,
+      cardId: row.cardId,
+    );
+  }
+}
+
+class PaymentCardRepository {
+  PaymentCardRepository(this._db);
+
+  final AppDatabase _db;
+
+  Stream<List<PaymentCardModel>> watchCards({bool includeArchived = false}) {
+    final query = _db.select(_db.paymentCards)
+      ..orderBy([(row) => OrderingTerm.asc(row.bankName)]);
+
+    if (!includeArchived) {
+      query.where((row) => row.isArchived.equals(false));
+    }
+
+    return query.watch().map((rows) => rows.map(_mapRow).toList());
+  }
+
+  Future<List<PaymentCardModel>> getActiveCards() async {
+    final rows = await (_db.select(_db.paymentCards)
+          ..where((t) => t.isArchived.equals(false))
+          ..orderBy([(t) => OrderingTerm.asc(t.bankName)]))
+        .get();
+    return rows.map(_mapRow).toList();
+  }
+
+  Future<List<PaymentCardModel>> getAllCards() async {
+    final rows = await (_db.select(_db.paymentCards)
+          ..orderBy([(t) => OrderingTerm.asc(t.bankName)]))
+        .get();
+    return rows.map(_mapRow).toList();
+  }
+
+  Future<PaymentCardModel?> getCard(String id) async {
+    final row =
+        await (_db.select(_db.paymentCards)..where((t) => t.id.equals(id))).getSingleOrNull();
+    return row == null ? null : _mapRow(row);
+  }
+
+  Future<void> upsert(PaymentCardModel card) async {
+    await _db.into(_db.paymentCards).insertOnConflictUpdate(
+          PaymentCardsCompanion(
+            id: Value(card.id),
+            network: Value(card.network.storageKey),
+            bankName: Value(card.bankName),
+            cardTier: Value(card.cardTier?.storageKey),
+            last4: Value(card.last4),
+            nickname: Value(card.nickname),
+            isArchived: Value(card.isArchived),
+            createdAt: Value(card.createdAt),
+            updatedAt: Value(card.updatedAt),
+            archivedAt: Value(card.archivedAt),
+          ),
+        );
+  }
+
+  Future<void> archive(String id) async {
+    final now = DateTime.now().toUtc();
+    await (_db.update(_db.paymentCards)..where((t) => t.id.equals(id))).write(
+      PaymentCardsCompanion(
+        isArchived: const Value(true),
+        archivedAt: Value(now),
+        updatedAt: Value(now),
+      ),
+    );
+  }
+
+  Future<void> replaceAll(List<PaymentCardModel> cards) async {
+    await _db.transaction(() async {
+      await _db.delete(_db.paymentCards).go();
+      if (cards.isNotEmpty) {
+        await _db.batch((batch) {
+          batch.insertAll(
+            _db.paymentCards,
+            cards
+                .map(
+                  (card) => PaymentCardsCompanion(
+                    id: Value(card.id),
+                    network: Value(card.network.storageKey),
+                    bankName: Value(card.bankName),
+                    cardTier: Value(card.cardTier?.storageKey),
+                    last4: Value(card.last4),
+                    nickname: Value(card.nickname),
+                    isArchived: Value(card.isArchived),
+                    createdAt: Value(card.createdAt),
+                    updatedAt: Value(card.updatedAt),
+                    archivedAt: Value(card.archivedAt),
+                  ),
+                )
+                .toList(),
+          );
+        });
+      }
+    });
+  }
+
+  PaymentCardModel _mapRow(PaymentCard row) {
+    return PaymentCardModel(
+      id: row.id,
+      network: CardNetwork.fromStorage(row.network),
+      bankName: row.bankName,
+      cardTier: CardTier.fromStorage(row.cardTier),
+      last4: row.last4,
+      nickname: row.nickname,
+      isArchived: row.isArchived,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
+      archivedAt: row.archivedAt,
     );
   }
 }

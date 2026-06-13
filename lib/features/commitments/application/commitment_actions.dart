@@ -51,6 +51,7 @@ class CommitmentActions {
       exchangeRate: normalized.exchangeRate,
       paymentMethod: normalized.paymentMethod,
       paymentSourceLabel: normalized.paymentSourceLabel,
+      cardId: normalized.cardId,
     );
     await save(commitment);
     return commitment;

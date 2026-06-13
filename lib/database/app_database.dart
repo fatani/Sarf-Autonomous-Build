@@ -7,6 +7,7 @@ part 'app_database.g.dart';
 @DriftDatabase(
   tables: [
     Commitments,
+    PaymentCards,
     ServiceTemplates,
     AppSettings,
     NotificationSchedules,
@@ -80,6 +81,10 @@ class AppDatabase extends _$AppDatabase {
               UPDATE commitments SET exchange_rate = paid_reporting_amount / amount
               WHERE currency != reporting_currency AND amount > 0
             ''');
+          }
+          if (from < 6) {
+            await m.createTable(paymentCards);
+            await m.addColumn(commitments, commitments.cardId);
           }
           await into(schemaMeta).insertOnConflictUpdate(
             SchemaMetaCompanion(

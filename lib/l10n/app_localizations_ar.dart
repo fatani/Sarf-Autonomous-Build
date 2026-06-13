@@ -465,4 +465,130 @@ class AppLocalizationsAr extends AppLocalizations {
   String paidBy(String source) {
     return 'الدفع: $source';
   }
+
+  @override
+  String get cardsSectionTitle => 'البطاقات';
+
+  @override
+  String get cardsSectionSubtitle => 'إدارة بطاقات الدفع المرجعية';
+
+  @override
+  String get cardsEmptyHint => 'أضف بطاقة لتعرف من أين تُخصم اشتراكاتك.';
+
+  @override
+  String get addCard => 'إضافة بطاقة';
+
+  @override
+  String get editCard => 'تعديل البطاقة';
+
+  @override
+  String get archiveCard => 'أرشفة البطاقة';
+
+  @override
+  String get cardNetworkSection => 'شبكة البطاقة';
+
+  @override
+  String get cardBankSection => 'البنك';
+
+  @override
+  String get cardTierSection => 'فئة البطاقة';
+
+  @override
+  String get cardPreviewLabel => 'معاينة';
+
+  @override
+  String get last4DigitsLabel => 'آخر 4 أرقام';
+
+  @override
+  String get invalidLast4 => 'أدخل 4 أرقام بالضبط';
+
+  @override
+  String get customBankLabel => 'اسم البنك';
+
+  @override
+  String get commitmentCardLabel => 'البطاقة';
+
+  @override
+  String get noCardSelected => 'بدون بطاقة';
+
+  @override
+  String get addNewCard => 'إضافة بطاقة جديدة';
+
+  @override
+  String get commitmentCardHint =>
+      'يمكنك إضافة بطاقة لتعرف من أين ستُخصم اشتراكاتك.';
+
+  @override
+  String get spendingByCard => 'الصرف حسب البطاقة';
+
+  @override
+  String cardCommitmentCount(int count) {
+    return '$count التزامات';
+  }
+
+  @override
+  String get cardNetworkVisa => 'فيزا';
+
+  @override
+  String get cardNetworkMastercard => 'ماستركارد';
+
+  @override
+  String get cardNetworkMada => 'مدى';
+
+  @override
+  String get cardNetworkAmex => 'أمريكان إكسبريس';
+
+  @override
+  String get cardNetworkOther => 'أخرى';
+
+  @override
+  String get cardTierClassic => 'كلاسيك';
+
+  @override
+  String get cardTierPlatinum => 'بلاتينيوم';
+
+  @override
+  String get cardTierSignature => 'سيجنتشر';
+
+  @override
+  String get cardTierInfinite => 'إنفينيت';
+
+  @override
+  String get cardTierWorld => 'ورلد';
+
+  @override
+  String get cardTierWorldElite => 'ورلد إيليت';
+
+  @override
+  String get cardTierOther => 'أخرى';
+
+  @override
+  String get bankAlRajhi => 'الراجحي';
+
+  @override
+  String get bankSnb => 'الأهلي';
+
+  @override
+  String get bankD360 => 'D360';
+
+  @override
+  String get bankSaudiInvestment => 'السعودي للاستثمار';
+
+  @override
+  String get bankStcPay => 'STC Pay';
+
+  @override
+  String get bankBarq => 'برق';
+
+  @override
+  String get bankAlinma => 'الإنماء';
+
+  @override
+  String get bankRiyad => 'الرياض';
+
+  @override
+  String get bankSab => 'SAB';
+
+  @override
+  String get bankOther => 'أخرى';
 }

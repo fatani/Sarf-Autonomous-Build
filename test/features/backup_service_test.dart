@@ -18,15 +18,19 @@ void main() {
   late CommitmentRepository commitmentRepository;
   late SettingsRepository settingsRepository;
 
+  late PaymentCardRepository paymentCardRepository;
+
   setUp(() {
     db = _memoryDb();
     commitmentRepository = CommitmentRepository(db);
     settingsRepository = SettingsRepository(db);
+    paymentCardRepository = PaymentCardRepository(db);
     backupService = BackupService(
       commitmentRepository,
       TemplateRepository(db),
       settingsRepository,
       NotificationScheduleRepository(db),
+      paymentCardRepository,
     );
   });
 
@@ -113,7 +117,34 @@ void main() {
     expect(restored?.paidReportingAmount, 75);
   });
 
-  test('import legacy backup without paid fields succeeds', () async {
+  test('export and import payment cards', () async {
+    await paymentCardRepository.upsert(
+      testPaymentCard(id: 'card-export', last4: '1234'),
+    );
+    await commitmentRepository.upsert(
+      testCommitment(id: 'linked', cardId: 'card-export'),
+    );
+
+    final backup = await backupService.exportBackup();
+    final cards = backup['data']['paymentCards'] as List;
+    expect(cards, hasLength(1));
+    expect(cards.single['id'], 'card-export');
+
+    await paymentCardRepository.replaceAll([]);
+    await commitmentRepository.upsert(testCommitment(id: 'other', name: 'Other'));
+
+    final result = await backupService.restoreBackup(backupService.encodeBackup(backup));
+    expect(result, BackupImportResult.success);
+
+    final restoredCards = await paymentCardRepository.getAllCards();
+    expect(restoredCards, hasLength(1));
+    expect(restoredCards.single.last4, '1234');
+
+    final restoredCommitment = await commitmentRepository.getCommitment('linked');
+    expect(restoredCommitment?.cardId, 'card-export');
+  });
+
+  test('old backup without payment cards still imports', () async {
     final legacyBackup = jsonEncode({
       'appName': AppConstants.appName,
       'exportVersion': AppConstants.backupExportVersion,

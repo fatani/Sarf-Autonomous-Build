@@ -12,7 +12,7 @@ AppDatabase _memoryDb() => AppDatabase(NativeDatabase.memory());
 
 void main() {
   group('AppDatabase', () {
-    test('schemaVersion is 5', () {
+    test('schemaVersion is current', () {
       final db = _memoryDb();
       addTearDown(db.close);
       expect(db.schemaVersion, AppConstants.schemaVersion);
@@ -118,6 +118,45 @@ void main() {
       expect(templates.length, AppConstants.builtInTemplateCount);
       expect(templates.any((t) => t.id == 'netflix'), isTrue);
       expect(templates.firstWhere((t) => t.id == 'netflix').defaultCurrency, 'USD');
+    });
+  });
+
+  group('PaymentCardRepository', () {
+    test('add, edit, archive card', () async {
+      final db = _memoryDb();
+      addTearDown(db.close);
+      final repository = PaymentCardRepository(db);
+      final card = testPaymentCard(id: 'card-1', last4: '4774');
+
+      await repository.upsert(card);
+      final loaded = await repository.getCard('card-1');
+      expect(loaded?.bankName, 'Al Rajhi');
+      expect(loaded?.last4, '4774');
+
+      await repository.upsert(card.copyWith(last4: () => '9999'));
+      final edited = await repository.getCard('card-1');
+      expect(edited?.last4, '9999');
+
+      await repository.archive('card-1');
+      final active = await repository.getActiveCards();
+      expect(active, isEmpty);
+      final all = await repository.getAllCards();
+      expect(all.single.isArchived, isTrue);
+    });
+
+    test('commitment links to card via cardId', () async {
+      final db = _memoryDb();
+      addTearDown(db.close);
+      final cardRepository = PaymentCardRepository(db);
+      final commitmentRepository = CommitmentRepository(db);
+      await cardRepository.upsert(testPaymentCard(id: 'card-visa'));
+
+      await commitmentRepository.upsert(
+        testCommitment(id: 'c-linked', cardId: 'card-visa', paymentSourceLabel: null),
+      );
+
+      final loaded = await commitmentRepository.getCommitment('c-linked');
+      expect(loaded?.cardId, 'card-visa');
     });
   });
 
