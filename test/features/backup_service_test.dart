@@ -8,24 +8,9 @@ import 'package:sarf/core/domain/models.dart';
 import 'package:sarf/database/app_database.dart';
 import 'package:sarf/features/settings/data/backup_service.dart';
 import 'package:sarf/features/shared/data/repositories.dart';
+import '../test_helpers.dart';
 
 AppDatabase _memoryDb() => AppDatabase(NativeDatabase.memory());
-
-CommitmentModel _sampleCommitment({String id = 'c1'}) {
-  final now = DateTime.utc(2026, 1, 1);
-  return CommitmentModel(
-    id: id,
-    name: 'Netflix',
-    amount: 49,
-    currency: 'SAR',
-    billingCycle: BillingCycle.monthly,
-    category: CommitmentCategory.entertainment,
-    nextDueDate: DateTime.utc(2026, 1, 15),
-    reminderDaysBefore: 3,
-    createdAt: now,
-    updatedAt: now,
-  );
-}
 
 void main() {
   late AppDatabase db;
@@ -50,7 +35,7 @@ void main() {
   });
 
   test('export produces valid JSON with metadata', () async {
-    await commitmentRepository.upsert(_sampleCommitment());
+    await commitmentRepository.upsert(testCommitment(name: 'Netflix'));
     await settingsRepository.saveSettings(
       const AppSettingsModel(
         localePreference: AppLocalePreference.en,
@@ -69,6 +54,72 @@ void main() {
     expect(backup['exportedAt'], isNotEmpty);
     final data = backup['data'] as Map<String, dynamic>;
     expect((data['commitments'] as List), hasLength(1));
+  });
+
+  test('export includes currency and payment fields', () async {
+    await commitmentRepository.upsert(
+      testCommitment(
+        id: 'usd-1',
+        name: 'ChatGPT',
+        amount: 20,
+        currency: 'USD',
+        reportingCurrency: 'SAR',
+        estimatedReportingAmount: 75,
+        exchangeRate: 3.75,
+        paymentMethod: PaymentMethod.card,
+        paymentSourceLabel: 'Al Rajhi Visa',
+      ),
+    );
+
+    final backup = await backupService.exportBackup();
+    final commitment = (backup['data']['commitments'] as List).single as Map<String, dynamic>;
+
+    expect(commitment['reportingCurrency'], 'SAR');
+    expect(commitment['estimatedReportingAmount'], 75);
+    expect(commitment['exchangeRate'], 3.75);
+    expect(commitment['paymentMethod'], 'card');
+    expect(commitment['paymentSourceLabel'], 'Al Rajhi Visa');
+  });
+
+  test('import legacy backup without new fields succeeds', () async {
+    final legacyBackup = jsonEncode({
+      'appName': AppConstants.appName,
+      'exportVersion': AppConstants.backupExportVersion,
+      'schemaVersion': 3,
+      'exportedAt': DateTime.utc(2026, 1, 1).toIso8601String(),
+      'data': {
+        'commitments': [
+          {
+            'id': 'legacy-usd',
+            'name': 'ChatGPT',
+            'amount': 20,
+            'currency': 'USD',
+            'billingCycle': 'monthly',
+            'category': 'work',
+            'nextDueDate': DateTime.utc(2026, 2, 1).toIso8601String(),
+            'reminderDaysBefore': 3,
+            'notes': null,
+            'templateId': null,
+            'isPaused': false,
+            'deletedAt': null,
+            'createdAt': DateTime.utc(2026, 1, 1).toIso8601String(),
+            'updatedAt': DateTime.utc(2026, 1, 1).toIso8601String(),
+          },
+        ],
+        'customTemplates': [],
+        'settings': {'default_currency': 'SAR'},
+        'notificationSchedules': [],
+      },
+    });
+
+    final result = await backupService.restoreBackup(legacyBackup);
+    expect(result, BackupImportResult.success);
+
+    final restored = await commitmentRepository.getCommitment('legacy-usd');
+    expect(restored?.currency, 'USD');
+    expect(restored?.reportingCurrency, AppConstants.defaultCurrency);
+    expect(restored?.estimatedReportingAmount, 20);
+    expect(restored?.paymentMethod, PaymentMethod.card);
   });
 
   test('import rejects invalid app name', () async {
@@ -95,11 +146,11 @@ void main() {
   });
 
   test('full restore replaces existing commitments', () async {
-    await commitmentRepository.upsert(_sampleCommitment(id: 'old'));
+    await commitmentRepository.upsert(testCommitment(id: 'old', name: 'Netflix'));
     final backup = await backupService.exportBackup();
     final backupJson = backupService.encodeBackup(backup);
 
-    await commitmentRepository.upsert(_sampleCommitment(id: 'new').copyWith(name: 'Spotify'));
+    await commitmentRepository.upsert(testCommitment(id: 'new', name: 'Spotify'));
     expect((await commitmentRepository.getAllCommitments()), hasLength(2));
 
     final result = await backupService.restoreBackup(backupJson);

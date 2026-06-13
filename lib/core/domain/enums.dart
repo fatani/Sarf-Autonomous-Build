@@ -40,6 +40,27 @@ enum CommitmentCategory {
   }
 }
 
+enum PaymentMethod {
+  card,
+  mada,
+  applePay,
+  bankTransfer,
+  cash,
+  other;
+
+  String get storageKey => name;
+
+  static PaymentMethod fromStorage(String? value) {
+    if (value == null) {
+      return PaymentMethod.card;
+    }
+    return PaymentMethod.values.firstWhere(
+      (method) => method.name == value,
+      orElse: () => PaymentMethod.other,
+    );
+  }
+}
+
 enum AppLocalePreference {
   system,
   en,

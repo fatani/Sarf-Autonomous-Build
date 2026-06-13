@@ -181,6 +181,7 @@ class _CommitmentCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: Text(
@@ -190,12 +191,34 @@ class _CommitmentCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  Text(
-                    Formatters.money(commitment.amount, commitment.currency, locale),
-                    style: theme.textTheme.titleMedium,
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        Formatters.commitmentPrimaryAmount(commitment, locale, l10n),
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      if (commitment.hasForeignCurrency)
+                        Text(
+                          Formatters.commitmentSecondaryAmount(commitment, locale, l10n),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.outline,
+                          ),
+                        ),
+                    ],
                   ),
                 ],
               ),
+              if (Formatters.paymentSourceLine(commitment, l10n) case final paymentLine?)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    paymentLine,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 8),
               Wrap(
                 spacing: 8,

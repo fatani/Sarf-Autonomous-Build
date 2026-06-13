@@ -174,5 +174,39 @@
   "crashLogEmpty": "No crash log entries yet.",
   "errorScreenTitle": "Something went wrong",
   "errorScreenBody": "The app hit an unexpected error. Restart the app to continue.",
-  "suggestedDefaultHint": "Suggested default only"
+  "suggestedDefaultHint": "Suggested default only",
+  "amountSectionTitle": "Amount",
+  "paymentSectionTitle": "Payment",
+  "exchangeRateLabel": "Exchange rate",
+  "exchangeRateHint": "1 {originalCurrency} = ? {reportingCurrency}",
+  "@exchangeRateHint": {
+    "placeholders": {
+      "originalCurrency": {"type": "String"},
+      "reportingCurrency": {"type": "String"}
+    }
+  },
+  "invalidExchangeRate": "Enter a valid exchange rate",
+  "estimatedReportingAmount": "Estimated: {amount}",
+  "@estimatedReportingAmount": {
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "estimatedReportingAmountLabel": "Estimated in reporting currency",
+  "paymentMethodLabel": "Payment method",
+  "paymentMethodCard": "Card",
+  "paymentMethodMada": "Mada",
+  "paymentMethodApplePay": "Apple Pay",
+  "paymentMethodBankTransfer": "Bank transfer",
+  "paymentMethodCash": "Cash",
+  "paymentMethodOther": "Other",
+  "paymentSourceLabel": "Payment source",
+  "paymentSourceHint": "Optional — e.g. Al Rajhi Visa",
+  "amountApprox": "≈",
+  "paidBy": "Paid by: {source}",
+  "@paidBy": {
+    "placeholders": {
+      "source": {"type": "String"}
+    }
+  }
 }

@@ -8,8 +8,9 @@ ServiceTemplateModel _template(
   CommitmentCategory category,
   double defaultAmount,
   BillingCycle cycle,
-  String iconName,
-) {
+  String iconName, {
+  String defaultCurrency = 'SAR',
+}) {
   return ServiceTemplateModel(
     id: id,
     nameEn: nameEn,
@@ -18,6 +19,7 @@ ServiceTemplateModel _template(
     defaultAmount: defaultAmount,
     defaultBillingCycle: cycle,
     iconName: iconName,
+    defaultCurrency: defaultCurrency,
   );
 }
 
@@ -34,7 +36,7 @@ List<ServiceTemplateModel> buildTemplateEntries() {
   const yearly = BillingCycle.yearly;
   const quarterly = BillingCycle.quarterly;
 
-  return [
+  return _applyDefaultCurrencies([
     // Entertainment (25)
     _template('netflix', 'Netflix', 'نتفليكس', entertainment, 49, monthly, 'movie'),
     _template('spotify', 'Spotify', 'سبوتify', entertainment, 21.99, monthly, 'music_note'),
@@ -163,5 +165,37 @@ List<ServiceTemplateModel> buildTemplateEntries() {
     _template('charity', 'Charity donation', 'تبرع خيري', other, 100, monthly, 'home'),
     _template('club_membership', 'Club membership', 'عضوية نادي', other, 500, yearly, 'fitness_center'),
     _template('newspaper', 'Newspaper subscription', 'اشتراك صحيفة', other, 29.99, monthly, 'receipt_long'),
-  ];
+  ]);
+}
+
+const _usdTemplateIds = {
+  'netflix', 'spotify', 'disney_plus', 'amazon_prime', 'apple_tv', 'hbo_max', 'youtube_premium',
+  'starz_play', 'deezer', 'tidal', 'audible', 'playstation_plus', 'xbox_game_pass',
+  'nintendo_online', 'crunchyroll', 'apple_music', 'twitch', 'paramount_plus', 'peacock', 'hulu',
+  'soundcloud_go', 'microsoft_365', 'google_workspace', 'slack', 'zoom', 'notion',
+  'adobe_creative_cloud', 'figma', 'github', 'linkedin_premium', 'canva_pro', 'dropbox_business',
+  'todoist', 'evernote', 'asana', 'monday_com', 'coursera', 'udemy', 'linkedin_learning',
+  'duolingo_plus', 'skillshare', 'masterclass', 'brilliant', 'pluralsight', 'edx', 'babbel',
+  'rosetta_stone', 'khan_academy', 'treehouse', 'codecademy', 'google_fi', 'verizon', 'tmobile',
+  'att', 'orange', 'vodafone', 'icloud', 'google_one', 'dropbox', 'onedrive', 'amazon_photos',
+  'pcloud', 'box', 'sync_com', 'mega', 'backblaze', 'domain_hosting', 'vpn',
+};
+
+List<ServiceTemplateModel> _applyDefaultCurrencies(List<ServiceTemplateModel> templates) {
+  return templates
+      .map(
+        (template) => _usdTemplateIds.contains(template.id)
+            ? ServiceTemplateModel(
+                id: template.id,
+                nameEn: template.nameEn,
+                nameAr: template.nameAr,
+                category: template.category,
+                defaultAmount: template.defaultAmount,
+                defaultBillingCycle: template.defaultBillingCycle,
+                iconName: template.iconName,
+                defaultCurrency: 'USD',
+              )
+            : template,
+      )
+      .toList();
 }

@@ -158,6 +158,65 @@ class $CommitmentsTable extends Commitments
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _reportingCurrencyMeta = const VerificationMeta(
+    'reportingCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> reportingCurrency =
+      GeneratedColumn<String>(
+        'reporting_currency',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+        defaultValue: const Constant('SAR'),
+      );
+  static const VerificationMeta _estimatedReportingAmountMeta =
+      const VerificationMeta('estimatedReportingAmount');
+  @override
+  late final GeneratedColumn<double> estimatedReportingAmount =
+      GeneratedColumn<double>(
+        'estimated_reporting_amount',
+        aliasedName,
+        false,
+        type: DriftSqlType.double,
+        requiredDuringInsert: false,
+        defaultValue: const Constant(0),
+      );
+  static const VerificationMeta _exchangeRateMeta = const VerificationMeta(
+    'exchangeRate',
+  );
+  @override
+  late final GeneratedColumn<double> exchangeRate = GeneratedColumn<double>(
+    'exchange_rate',
+    aliasedName,
+    true,
+    type: DriftSqlType.double,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _paymentMethodMeta = const VerificationMeta(
+    'paymentMethod',
+  );
+  @override
+  late final GeneratedColumn<String> paymentMethod = GeneratedColumn<String>(
+    'payment_method',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('card'),
+  );
+  static const VerificationMeta _paymentSourceLabelMeta =
+      const VerificationMeta('paymentSourceLabel');
+  @override
+  late final GeneratedColumn<String> paymentSourceLabel =
+      GeneratedColumn<String>(
+        'payment_source_label',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -174,6 +233,11 @@ class $CommitmentsTable extends Commitments
     deletedAt,
     createdAt,
     updatedAt,
+    reportingCurrency,
+    estimatedReportingAmount,
+    exchangeRate,
+    paymentMethod,
+    paymentSourceLabel,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -295,6 +359,51 @@ class $CommitmentsTable extends Commitments
     } else if (isInserting) {
       context.missing(_updatedAtMeta);
     }
+    if (data.containsKey('reporting_currency')) {
+      context.handle(
+        _reportingCurrencyMeta,
+        reportingCurrency.isAcceptableOrUnknown(
+          data['reporting_currency']!,
+          _reportingCurrencyMeta,
+        ),
+      );
+    }
+    if (data.containsKey('estimated_reporting_amount')) {
+      context.handle(
+        _estimatedReportingAmountMeta,
+        estimatedReportingAmount.isAcceptableOrUnknown(
+          data['estimated_reporting_amount']!,
+          _estimatedReportingAmountMeta,
+        ),
+      );
+    }
+    if (data.containsKey('exchange_rate')) {
+      context.handle(
+        _exchangeRateMeta,
+        exchangeRate.isAcceptableOrUnknown(
+          data['exchange_rate']!,
+          _exchangeRateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('payment_method')) {
+      context.handle(
+        _paymentMethodMeta,
+        paymentMethod.isAcceptableOrUnknown(
+          data['payment_method']!,
+          _paymentMethodMeta,
+        ),
+      );
+    }
+    if (data.containsKey('payment_source_label')) {
+      context.handle(
+        _paymentSourceLabelMeta,
+        paymentSourceLabel.isAcceptableOrUnknown(
+          data['payment_source_label']!,
+          _paymentSourceLabelMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -360,6 +469,26 @@ class $CommitmentsTable extends Commitments
         DriftSqlType.dateTime,
         data['${effectivePrefix}updated_at'],
       )!,
+      reportingCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}reporting_currency'],
+      )!,
+      estimatedReportingAmount: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}estimated_reporting_amount'],
+      )!,
+      exchangeRate: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}exchange_rate'],
+      ),
+      paymentMethod: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payment_method'],
+      )!,
+      paymentSourceLabel: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payment_source_label'],
+      ),
     );
   }
 
@@ -384,6 +513,11 @@ class Commitment extends DataClass implements Insertable<Commitment> {
   final DateTime? deletedAt;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String reportingCurrency;
+  final double estimatedReportingAmount;
+  final double? exchangeRate;
+  final String paymentMethod;
+  final String? paymentSourceLabel;
   const Commitment({
     required this.id,
     required this.name,
@@ -399,6 +533,11 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     this.deletedAt,
     required this.createdAt,
     required this.updatedAt,
+    required this.reportingCurrency,
+    required this.estimatedReportingAmount,
+    this.exchangeRate,
+    required this.paymentMethod,
+    this.paymentSourceLabel,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -425,6 +564,17 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
+    map['reporting_currency'] = Variable<String>(reportingCurrency);
+    map['estimated_reporting_amount'] = Variable<double>(
+      estimatedReportingAmount,
+    );
+    if (!nullToAbsent || exchangeRate != null) {
+      map['exchange_rate'] = Variable<double>(exchangeRate);
+    }
+    map['payment_method'] = Variable<String>(paymentMethod);
+    if (!nullToAbsent || paymentSourceLabel != null) {
+      map['payment_source_label'] = Variable<String>(paymentSourceLabel);
+    }
     return map;
   }
 
@@ -452,6 +602,15 @@ class Commitment extends DataClass implements Insertable<Commitment> {
           : Value(deletedAt),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
+      reportingCurrency: Value(reportingCurrency),
+      estimatedReportingAmount: Value(estimatedReportingAmount),
+      exchangeRate: exchangeRate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(exchangeRate),
+      paymentMethod: Value(paymentMethod),
+      paymentSourceLabel: paymentSourceLabel == null && nullToAbsent
+          ? const Value.absent()
+          : Value(paymentSourceLabel),
     );
   }
 
@@ -475,6 +634,15 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       deletedAt: serializer.fromJson<DateTime?>(json['deletedAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+      reportingCurrency: serializer.fromJson<String>(json['reportingCurrency']),
+      estimatedReportingAmount: serializer.fromJson<double>(
+        json['estimatedReportingAmount'],
+      ),
+      exchangeRate: serializer.fromJson<double?>(json['exchangeRate']),
+      paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
+      paymentSourceLabel: serializer.fromJson<String?>(
+        json['paymentSourceLabel'],
+      ),
     );
   }
   @override
@@ -495,6 +663,13 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       'deletedAt': serializer.toJson<DateTime?>(deletedAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
+      'reportingCurrency': serializer.toJson<String>(reportingCurrency),
+      'estimatedReportingAmount': serializer.toJson<double>(
+        estimatedReportingAmount,
+      ),
+      'exchangeRate': serializer.toJson<double?>(exchangeRate),
+      'paymentMethod': serializer.toJson<String>(paymentMethod),
+      'paymentSourceLabel': serializer.toJson<String?>(paymentSourceLabel),
     };
   }
 
@@ -513,6 +688,11 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     Value<DateTime?> deletedAt = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? reportingCurrency,
+    double? estimatedReportingAmount,
+    Value<double?> exchangeRate = const Value.absent(),
+    String? paymentMethod,
+    Value<String?> paymentSourceLabel = const Value.absent(),
   }) => Commitment(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -530,6 +710,14 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     deletedAt: deletedAt.present ? deletedAt.value : this.deletedAt,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
+    reportingCurrency: reportingCurrency ?? this.reportingCurrency,
+    estimatedReportingAmount:
+        estimatedReportingAmount ?? this.estimatedReportingAmount,
+    exchangeRate: exchangeRate.present ? exchangeRate.value : this.exchangeRate,
+    paymentMethod: paymentMethod ?? this.paymentMethod,
+    paymentSourceLabel: paymentSourceLabel.present
+        ? paymentSourceLabel.value
+        : this.paymentSourceLabel,
   );
   Commitment copyWithCompanion(CommitmentsCompanion data) {
     return Commitment(
@@ -555,6 +743,21 @@ class Commitment extends DataClass implements Insertable<Commitment> {
       deletedAt: data.deletedAt.present ? data.deletedAt.value : this.deletedAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+      reportingCurrency: data.reportingCurrency.present
+          ? data.reportingCurrency.value
+          : this.reportingCurrency,
+      estimatedReportingAmount: data.estimatedReportingAmount.present
+          ? data.estimatedReportingAmount.value
+          : this.estimatedReportingAmount,
+      exchangeRate: data.exchangeRate.present
+          ? data.exchangeRate.value
+          : this.exchangeRate,
+      paymentMethod: data.paymentMethod.present
+          ? data.paymentMethod.value
+          : this.paymentMethod,
+      paymentSourceLabel: data.paymentSourceLabel.present
+          ? data.paymentSourceLabel.value
+          : this.paymentSourceLabel,
     );
   }
 
@@ -574,7 +777,12 @@ class Commitment extends DataClass implements Insertable<Commitment> {
           ..write('isPaused: $isPaused, ')
           ..write('deletedAt: $deletedAt, ')
           ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('reportingCurrency: $reportingCurrency, ')
+          ..write('estimatedReportingAmount: $estimatedReportingAmount, ')
+          ..write('exchangeRate: $exchangeRate, ')
+          ..write('paymentMethod: $paymentMethod, ')
+          ..write('paymentSourceLabel: $paymentSourceLabel')
           ..write(')'))
         .toString();
   }
@@ -595,6 +803,11 @@ class Commitment extends DataClass implements Insertable<Commitment> {
     deletedAt,
     createdAt,
     updatedAt,
+    reportingCurrency,
+    estimatedReportingAmount,
+    exchangeRate,
+    paymentMethod,
+    paymentSourceLabel,
   );
   @override
   bool operator ==(Object other) =>
@@ -613,7 +826,12 @@ class Commitment extends DataClass implements Insertable<Commitment> {
           other.isPaused == this.isPaused &&
           other.deletedAt == this.deletedAt &&
           other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
+          other.updatedAt == this.updatedAt &&
+          other.reportingCurrency == this.reportingCurrency &&
+          other.estimatedReportingAmount == this.estimatedReportingAmount &&
+          other.exchangeRate == this.exchangeRate &&
+          other.paymentMethod == this.paymentMethod &&
+          other.paymentSourceLabel == this.paymentSourceLabel);
 }
 
 class CommitmentsCompanion extends UpdateCompanion<Commitment> {
@@ -631,6 +849,11 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
   final Value<DateTime?> deletedAt;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
+  final Value<String> reportingCurrency;
+  final Value<double> estimatedReportingAmount;
+  final Value<double?> exchangeRate;
+  final Value<String> paymentMethod;
+  final Value<String?> paymentSourceLabel;
   final Value<int> rowid;
   const CommitmentsCompanion({
     this.id = const Value.absent(),
@@ -647,6 +870,11 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     this.deletedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
+    this.reportingCurrency = const Value.absent(),
+    this.estimatedReportingAmount = const Value.absent(),
+    this.exchangeRate = const Value.absent(),
+    this.paymentMethod = const Value.absent(),
+    this.paymentSourceLabel = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   CommitmentsCompanion.insert({
@@ -664,6 +892,11 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     this.deletedAt = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
+    this.reportingCurrency = const Value.absent(),
+    this.estimatedReportingAmount = const Value.absent(),
+    this.exchangeRate = const Value.absent(),
+    this.paymentMethod = const Value.absent(),
+    this.paymentSourceLabel = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        name = Value(name),
@@ -689,6 +922,11 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     Expression<DateTime>? deletedAt,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
+    Expression<String>? reportingCurrency,
+    Expression<double>? estimatedReportingAmount,
+    Expression<double>? exchangeRate,
+    Expression<String>? paymentMethod,
+    Expression<String>? paymentSourceLabel,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -707,6 +945,13 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
       if (deletedAt != null) 'deleted_at': deletedAt,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
+      if (reportingCurrency != null) 'reporting_currency': reportingCurrency,
+      if (estimatedReportingAmount != null)
+        'estimated_reporting_amount': estimatedReportingAmount,
+      if (exchangeRate != null) 'exchange_rate': exchangeRate,
+      if (paymentMethod != null) 'payment_method': paymentMethod,
+      if (paymentSourceLabel != null)
+        'payment_source_label': paymentSourceLabel,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -726,6 +971,11 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     Value<DateTime?>? deletedAt,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
+    Value<String>? reportingCurrency,
+    Value<double>? estimatedReportingAmount,
+    Value<double?>? exchangeRate,
+    Value<String>? paymentMethod,
+    Value<String?>? paymentSourceLabel,
     Value<int>? rowid,
   }) {
     return CommitmentsCompanion(
@@ -743,6 +993,12 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
       deletedAt: deletedAt ?? this.deletedAt,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      reportingCurrency: reportingCurrency ?? this.reportingCurrency,
+      estimatedReportingAmount:
+          estimatedReportingAmount ?? this.estimatedReportingAmount,
+      exchangeRate: exchangeRate ?? this.exchangeRate,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      paymentSourceLabel: paymentSourceLabel ?? this.paymentSourceLabel,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -792,6 +1048,23 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
     if (updatedAt.present) {
       map['updated_at'] = Variable<DateTime>(updatedAt.value);
     }
+    if (reportingCurrency.present) {
+      map['reporting_currency'] = Variable<String>(reportingCurrency.value);
+    }
+    if (estimatedReportingAmount.present) {
+      map['estimated_reporting_amount'] = Variable<double>(
+        estimatedReportingAmount.value,
+      );
+    }
+    if (exchangeRate.present) {
+      map['exchange_rate'] = Variable<double>(exchangeRate.value);
+    }
+    if (paymentMethod.present) {
+      map['payment_method'] = Variable<String>(paymentMethod.value);
+    }
+    if (paymentSourceLabel.present) {
+      map['payment_source_label'] = Variable<String>(paymentSourceLabel.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -815,6 +1088,11 @@ class CommitmentsCompanion extends UpdateCompanion<Commitment> {
           ..write('deletedAt: $deletedAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
+          ..write('reportingCurrency: $reportingCurrency, ')
+          ..write('estimatedReportingAmount: $estimatedReportingAmount, ')
+          ..write('exchangeRate: $exchangeRate, ')
+          ..write('paymentMethod: $paymentMethod, ')
+          ..write('paymentSourceLabel: $paymentSourceLabel, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -914,6 +1192,17 @@ class $ServiceTemplatesTable extends ServiceTemplates
     ),
     defaultValue: const Constant(true),
   );
+  static const VerificationMeta _defaultCurrencyMeta = const VerificationMeta(
+    'defaultCurrency',
+  );
+  @override
+  late final GeneratedColumn<String> defaultCurrency = GeneratedColumn<String>(
+    'default_currency',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -924,6 +1213,7 @@ class $ServiceTemplatesTable extends ServiceTemplates
     defaultBillingCycle,
     iconName,
     isBuiltIn,
+    defaultCurrency,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -998,6 +1288,15 @@ class $ServiceTemplatesTable extends ServiceTemplates
         isBuiltIn.isAcceptableOrUnknown(data['is_built_in']!, _isBuiltInMeta),
       );
     }
+    if (data.containsKey('default_currency')) {
+      context.handle(
+        _defaultCurrencyMeta,
+        defaultCurrency.isAcceptableOrUnknown(
+          data['default_currency']!,
+          _defaultCurrencyMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -1039,6 +1338,10 @@ class $ServiceTemplatesTable extends ServiceTemplates
         DriftSqlType.bool,
         data['${effectivePrefix}is_built_in'],
       )!,
+      defaultCurrency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}default_currency'],
+      ),
     );
   }
 
@@ -1057,6 +1360,7 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
   final String defaultBillingCycle;
   final String iconName;
   final bool isBuiltIn;
+  final String? defaultCurrency;
   const ServiceTemplate({
     required this.id,
     required this.nameEn,
@@ -1066,6 +1370,7 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
     required this.defaultBillingCycle,
     required this.iconName,
     required this.isBuiltIn,
+    this.defaultCurrency,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1080,6 +1385,9 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
     map['default_billing_cycle'] = Variable<String>(defaultBillingCycle);
     map['icon_name'] = Variable<String>(iconName);
     map['is_built_in'] = Variable<bool>(isBuiltIn);
+    if (!nullToAbsent || defaultCurrency != null) {
+      map['default_currency'] = Variable<String>(defaultCurrency);
+    }
     return map;
   }
 
@@ -1095,6 +1403,9 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
       defaultBillingCycle: Value(defaultBillingCycle),
       iconName: Value(iconName),
       isBuiltIn: Value(isBuiltIn),
+      defaultCurrency: defaultCurrency == null && nullToAbsent
+          ? const Value.absent()
+          : Value(defaultCurrency),
     );
   }
 
@@ -1114,6 +1425,7 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
       ),
       iconName: serializer.fromJson<String>(json['iconName']),
       isBuiltIn: serializer.fromJson<bool>(json['isBuiltIn']),
+      defaultCurrency: serializer.fromJson<String?>(json['defaultCurrency']),
     );
   }
   @override
@@ -1128,6 +1440,7 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
       'defaultBillingCycle': serializer.toJson<String>(defaultBillingCycle),
       'iconName': serializer.toJson<String>(iconName),
       'isBuiltIn': serializer.toJson<bool>(isBuiltIn),
+      'defaultCurrency': serializer.toJson<String?>(defaultCurrency),
     };
   }
 
@@ -1140,6 +1453,7 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
     String? defaultBillingCycle,
     String? iconName,
     bool? isBuiltIn,
+    Value<String?> defaultCurrency = const Value.absent(),
   }) => ServiceTemplate(
     id: id ?? this.id,
     nameEn: nameEn ?? this.nameEn,
@@ -1151,6 +1465,9 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
     defaultBillingCycle: defaultBillingCycle ?? this.defaultBillingCycle,
     iconName: iconName ?? this.iconName,
     isBuiltIn: isBuiltIn ?? this.isBuiltIn,
+    defaultCurrency: defaultCurrency.present
+        ? defaultCurrency.value
+        : this.defaultCurrency,
   );
   ServiceTemplate copyWithCompanion(ServiceTemplatesCompanion data) {
     return ServiceTemplate(
@@ -1166,6 +1483,9 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
           : this.defaultBillingCycle,
       iconName: data.iconName.present ? data.iconName.value : this.iconName,
       isBuiltIn: data.isBuiltIn.present ? data.isBuiltIn.value : this.isBuiltIn,
+      defaultCurrency: data.defaultCurrency.present
+          ? data.defaultCurrency.value
+          : this.defaultCurrency,
     );
   }
 
@@ -1179,7 +1499,8 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
           ..write('defaultAmount: $defaultAmount, ')
           ..write('defaultBillingCycle: $defaultBillingCycle, ')
           ..write('iconName: $iconName, ')
-          ..write('isBuiltIn: $isBuiltIn')
+          ..write('isBuiltIn: $isBuiltIn, ')
+          ..write('defaultCurrency: $defaultCurrency')
           ..write(')'))
         .toString();
   }
@@ -1194,6 +1515,7 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
     defaultBillingCycle,
     iconName,
     isBuiltIn,
+    defaultCurrency,
   );
   @override
   bool operator ==(Object other) =>
@@ -1206,7 +1528,8 @@ class ServiceTemplate extends DataClass implements Insertable<ServiceTemplate> {
           other.defaultAmount == this.defaultAmount &&
           other.defaultBillingCycle == this.defaultBillingCycle &&
           other.iconName == this.iconName &&
-          other.isBuiltIn == this.isBuiltIn);
+          other.isBuiltIn == this.isBuiltIn &&
+          other.defaultCurrency == this.defaultCurrency);
 }
 
 class ServiceTemplatesCompanion extends UpdateCompanion<ServiceTemplate> {
@@ -1218,6 +1541,7 @@ class ServiceTemplatesCompanion extends UpdateCompanion<ServiceTemplate> {
   final Value<String> defaultBillingCycle;
   final Value<String> iconName;
   final Value<bool> isBuiltIn;
+  final Value<String?> defaultCurrency;
   final Value<int> rowid;
   const ServiceTemplatesCompanion({
     this.id = const Value.absent(),
@@ -1228,6 +1552,7 @@ class ServiceTemplatesCompanion extends UpdateCompanion<ServiceTemplate> {
     this.defaultBillingCycle = const Value.absent(),
     this.iconName = const Value.absent(),
     this.isBuiltIn = const Value.absent(),
+    this.defaultCurrency = const Value.absent(),
     this.rowid = const Value.absent(),
   });
   ServiceTemplatesCompanion.insert({
@@ -1239,6 +1564,7 @@ class ServiceTemplatesCompanion extends UpdateCompanion<ServiceTemplate> {
     required String defaultBillingCycle,
     this.iconName = const Value.absent(),
     this.isBuiltIn = const Value.absent(),
+    this.defaultCurrency = const Value.absent(),
     this.rowid = const Value.absent(),
   }) : id = Value(id),
        nameEn = Value(nameEn),
@@ -1254,6 +1580,7 @@ class ServiceTemplatesCompanion extends UpdateCompanion<ServiceTemplate> {
     Expression<String>? defaultBillingCycle,
     Expression<String>? iconName,
     Expression<bool>? isBuiltIn,
+    Expression<String>? defaultCurrency,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
@@ -1266,6 +1593,7 @@ class ServiceTemplatesCompanion extends UpdateCompanion<ServiceTemplate> {
         'default_billing_cycle': defaultBillingCycle,
       if (iconName != null) 'icon_name': iconName,
       if (isBuiltIn != null) 'is_built_in': isBuiltIn,
+      if (defaultCurrency != null) 'default_currency': defaultCurrency,
       if (rowid != null) 'rowid': rowid,
     });
   }
@@ -1279,6 +1607,7 @@ class ServiceTemplatesCompanion extends UpdateCompanion<ServiceTemplate> {
     Value<String>? defaultBillingCycle,
     Value<String>? iconName,
     Value<bool>? isBuiltIn,
+    Value<String?>? defaultCurrency,
     Value<int>? rowid,
   }) {
     return ServiceTemplatesCompanion(
@@ -1290,6 +1619,7 @@ class ServiceTemplatesCompanion extends UpdateCompanion<ServiceTemplate> {
       defaultBillingCycle: defaultBillingCycle ?? this.defaultBillingCycle,
       iconName: iconName ?? this.iconName,
       isBuiltIn: isBuiltIn ?? this.isBuiltIn,
+      defaultCurrency: defaultCurrency ?? this.defaultCurrency,
       rowid: rowid ?? this.rowid,
     );
   }
@@ -1323,6 +1653,9 @@ class ServiceTemplatesCompanion extends UpdateCompanion<ServiceTemplate> {
     if (isBuiltIn.present) {
       map['is_built_in'] = Variable<bool>(isBuiltIn.value);
     }
+    if (defaultCurrency.present) {
+      map['default_currency'] = Variable<String>(defaultCurrency.value);
+    }
     if (rowid.present) {
       map['rowid'] = Variable<int>(rowid.value);
     }
@@ -1340,6 +1673,7 @@ class ServiceTemplatesCompanion extends UpdateCompanion<ServiceTemplate> {
           ..write('defaultBillingCycle: $defaultBillingCycle, ')
           ..write('iconName: $iconName, ')
           ..write('isBuiltIn: $isBuiltIn, ')
+          ..write('defaultCurrency: $defaultCurrency, ')
           ..write('rowid: $rowid')
           ..write(')'))
         .toString();
@@ -2179,6 +2513,11 @@ typedef $$CommitmentsTableCreateCompanionBuilder =
       Value<DateTime?> deletedAt,
       required DateTime createdAt,
       required DateTime updatedAt,
+      Value<String> reportingCurrency,
+      Value<double> estimatedReportingAmount,
+      Value<double?> exchangeRate,
+      Value<String> paymentMethod,
+      Value<String?> paymentSourceLabel,
       Value<int> rowid,
     });
 typedef $$CommitmentsTableUpdateCompanionBuilder =
@@ -2197,6 +2536,11 @@ typedef $$CommitmentsTableUpdateCompanionBuilder =
       Value<DateTime?> deletedAt,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
+      Value<String> reportingCurrency,
+      Value<double> estimatedReportingAmount,
+      Value<double?> exchangeRate,
+      Value<String> paymentMethod,
+      Value<String?> paymentSourceLabel,
       Value<int> rowid,
     });
 
@@ -2276,6 +2620,31 @@ class $$CommitmentsTableFilterComposer
 
   ColumnFilters<DateTime> get updatedAt => $composableBuilder(
     column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get reportingCurrency => $composableBuilder(
+    column: $table.reportingCurrency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get estimatedReportingAmount => $composableBuilder(
+    column: $table.estimatedReportingAmount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get exchangeRate => $composableBuilder(
+    column: $table.exchangeRate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paymentMethod => $composableBuilder(
+    column: $table.paymentMethod,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paymentSourceLabel => $composableBuilder(
+    column: $table.paymentSourceLabel,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2358,6 +2727,31 @@ class $$CommitmentsTableOrderingComposer
     column: $table.updatedAt,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get reportingCurrency => $composableBuilder(
+    column: $table.reportingCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get estimatedReportingAmount => $composableBuilder(
+    column: $table.estimatedReportingAmount,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get exchangeRate => $composableBuilder(
+    column: $table.exchangeRate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get paymentMethod => $composableBuilder(
+    column: $table.paymentMethod,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get paymentSourceLabel => $composableBuilder(
+    column: $table.paymentSourceLabel,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CommitmentsTableAnnotationComposer
@@ -2418,6 +2812,31 @@ class $$CommitmentsTableAnnotationComposer
 
   GeneratedColumn<DateTime> get updatedAt =>
       $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+
+  GeneratedColumn<String> get reportingCurrency => $composableBuilder(
+    column: $table.reportingCurrency,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get estimatedReportingAmount => $composableBuilder(
+    column: $table.estimatedReportingAmount,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get exchangeRate => $composableBuilder(
+    column: $table.exchangeRate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get paymentMethod => $composableBuilder(
+    column: $table.paymentMethod,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get paymentSourceLabel => $composableBuilder(
+    column: $table.paymentSourceLabel,
+    builder: (column) => column,
+  );
 }
 
 class $$CommitmentsTableTableManager
@@ -2465,6 +2884,11 @@ class $$CommitmentsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
+                Value<String> reportingCurrency = const Value.absent(),
+                Value<double> estimatedReportingAmount = const Value.absent(),
+                Value<double?> exchangeRate = const Value.absent(),
+                Value<String> paymentMethod = const Value.absent(),
+                Value<String?> paymentSourceLabel = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CommitmentsCompanion(
                 id: id,
@@ -2481,6 +2905,11 @@ class $$CommitmentsTableTableManager
                 deletedAt: deletedAt,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                reportingCurrency: reportingCurrency,
+                estimatedReportingAmount: estimatedReportingAmount,
+                exchangeRate: exchangeRate,
+                paymentMethod: paymentMethod,
+                paymentSourceLabel: paymentSourceLabel,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2499,6 +2928,11 @@ class $$CommitmentsTableTableManager
                 Value<DateTime?> deletedAt = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
+                Value<String> reportingCurrency = const Value.absent(),
+                Value<double> estimatedReportingAmount = const Value.absent(),
+                Value<double?> exchangeRate = const Value.absent(),
+                Value<String> paymentMethod = const Value.absent(),
+                Value<String?> paymentSourceLabel = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => CommitmentsCompanion.insert(
                 id: id,
@@ -2515,6 +2949,11 @@ class $$CommitmentsTableTableManager
                 deletedAt: deletedAt,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
+                reportingCurrency: reportingCurrency,
+                estimatedReportingAmount: estimatedReportingAmount,
+                exchangeRate: exchangeRate,
+                paymentMethod: paymentMethod,
+                paymentSourceLabel: paymentSourceLabel,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0
@@ -2552,6 +2991,7 @@ typedef $$ServiceTemplatesTableCreateCompanionBuilder =
       required String defaultBillingCycle,
       Value<String> iconName,
       Value<bool> isBuiltIn,
+      Value<String?> defaultCurrency,
       Value<int> rowid,
     });
 typedef $$ServiceTemplatesTableUpdateCompanionBuilder =
@@ -2564,6 +3004,7 @@ typedef $$ServiceTemplatesTableUpdateCompanionBuilder =
       Value<String> defaultBillingCycle,
       Value<String> iconName,
       Value<bool> isBuiltIn,
+      Value<String?> defaultCurrency,
       Value<int> rowid,
     });
 
@@ -2613,6 +3054,11 @@ class $$ServiceTemplatesTableFilterComposer
 
   ColumnFilters<bool> get isBuiltIn => $composableBuilder(
     column: $table.isBuiltIn,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get defaultCurrency => $composableBuilder(
+    column: $table.defaultCurrency,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -2665,6 +3111,11 @@ class $$ServiceTemplatesTableOrderingComposer
     column: $table.isBuiltIn,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get defaultCurrency => $composableBuilder(
+    column: $table.defaultCurrency,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$ServiceTemplatesTableAnnotationComposer
@@ -2703,6 +3154,11 @@ class $$ServiceTemplatesTableAnnotationComposer
 
   GeneratedColumn<bool> get isBuiltIn =>
       $composableBuilder(column: $table.isBuiltIn, builder: (column) => column);
+
+  GeneratedColumn<String> get defaultCurrency => $composableBuilder(
+    column: $table.defaultCurrency,
+    builder: (column) => column,
+  );
 }
 
 class $$ServiceTemplatesTableTableManager
@@ -2750,6 +3206,7 @@ class $$ServiceTemplatesTableTableManager
                 Value<String> defaultBillingCycle = const Value.absent(),
                 Value<String> iconName = const Value.absent(),
                 Value<bool> isBuiltIn = const Value.absent(),
+                Value<String?> defaultCurrency = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ServiceTemplatesCompanion(
                 id: id,
@@ -2760,6 +3217,7 @@ class $$ServiceTemplatesTableTableManager
                 defaultBillingCycle: defaultBillingCycle,
                 iconName: iconName,
                 isBuiltIn: isBuiltIn,
+                defaultCurrency: defaultCurrency,
                 rowid: rowid,
               ),
           createCompanionCallback:
@@ -2772,6 +3230,7 @@ class $$ServiceTemplatesTableTableManager
                 required String defaultBillingCycle,
                 Value<String> iconName = const Value.absent(),
                 Value<bool> isBuiltIn = const Value.absent(),
+                Value<String?> defaultCurrency = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
               }) => ServiceTemplatesCompanion.insert(
                 id: id,
@@ -2782,6 +3241,7 @@ class $$ServiceTemplatesTableTableManager
                 defaultBillingCycle: defaultBillingCycle,
                 iconName: iconName,
                 isBuiltIn: isBuiltIn,
+                defaultCurrency: defaultCurrency,
                 rowid: rowid,
               ),
           withReferenceMapper: (p0) => p0

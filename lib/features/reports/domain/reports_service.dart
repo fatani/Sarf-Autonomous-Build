@@ -15,7 +15,8 @@ class ReportsService {
 
     var totalMonthly = 0.0;
     for (final commitment in active) {
-      final monthly = DateUtilsSarf.monthlyEquivalent(commitment.amount, commitment.billingCycle);
+      final reportingAmount = commitment.estimatedReportingAmount;
+      final monthly = DateUtilsSarf.monthlyEquivalent(reportingAmount, commitment.billingCycle);
       totalMonthly += monthly;
       byCategory.update(
         commitment.category,

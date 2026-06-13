@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:sarf/core/domain/enums.dart';
+import 'package:sarf/core/domain/models.dart';
 import 'package:sarf/l10n/app_localizations.dart';
 
 abstract final class Formatters {
@@ -11,6 +12,73 @@ abstract final class Formatters {
       decimalDigits: 2,
     );
     return formatter.format(amount);
+  }
+
+  static String commitmentPrimaryAmount(
+    CommitmentModel commitment,
+    Locale locale,
+    AppLocalizations l10n,
+  ) {
+    if (!commitment.hasForeignCurrency) {
+      return money(
+        commitment.originalAmount,
+        commitment.originalCurrency,
+        locale,
+      );
+    }
+    return money(commitment.originalAmount, commitment.originalCurrency, locale);
+  }
+
+  static String commitmentSecondaryAmount(
+    CommitmentModel commitment,
+    Locale locale,
+    AppLocalizations l10n,
+  ) {
+    if (!commitment.hasForeignCurrency) {
+      return '';
+    }
+    return '${l10n.amountApprox} ${money(commitment.estimatedReportingAmount, commitment.reportingCurrency, locale)}';
+  }
+
+  static String commitmentAmountLine(
+    CommitmentModel commitment,
+    Locale locale,
+    AppLocalizations l10n,
+  ) {
+    if (!commitment.hasForeignCurrency) {
+      return money(
+        commitment.originalAmount,
+        commitment.originalCurrency,
+        locale,
+      );
+    }
+    return '${money(commitment.originalAmount, commitment.originalCurrency, locale)} '
+        '${l10n.amountApprox} '
+        '${money(commitment.estimatedReportingAmount, commitment.reportingCurrency, locale)}';
+  }
+
+  static String? paymentSourceLine(CommitmentModel commitment, AppLocalizations l10n) {
+    final parts = <String>[
+      paymentMethodLabel(commitment.paymentMethod, l10n),
+      if (commitment.paymentSourceLabel != null &&
+          commitment.paymentSourceLabel!.trim().isNotEmpty)
+        commitment.paymentSourceLabel!.trim(),
+    ];
+    if (parts.every((part) => part.isEmpty)) {
+      return null;
+    }
+    return l10n.paidBy(parts.join(' · '));
+  }
+
+  static String paymentMethodLabel(PaymentMethod method, AppLocalizations l10n) {
+    return switch (method) {
+      PaymentMethod.card => l10n.paymentMethodCard,
+      PaymentMethod.mada => l10n.paymentMethodMada,
+      PaymentMethod.applePay => l10n.paymentMethodApplePay,
+      PaymentMethod.bankTransfer => l10n.paymentMethodBankTransfer,
+      PaymentMethod.cash => l10n.paymentMethodCash,
+      PaymentMethod.other => l10n.paymentMethodOther,
+    };
   }
 
   static String date(DateTime date, Locale locale) {

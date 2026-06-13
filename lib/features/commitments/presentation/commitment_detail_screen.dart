@@ -136,9 +136,18 @@ class _DetailBody extends StatelessWidget {
                 Text(commitment.name, style: theme.textTheme.headlineSmall),
                 const SizedBox(height: 8),
                 Text(
-                  Formatters.money(commitment.amount, commitment.currency, locale),
+                  Formatters.commitmentAmountLine(commitment, locale, l10n),
                   style: theme.textTheme.titleLarge,
                 ),
+                if (Formatters.paymentSourceLine(commitment, l10n) case final paymentLine?) ...[
+                  const SizedBox(height: 8),
+                  Text(
+                    paymentLine,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -153,6 +162,28 @@ class _DetailBody extends StatelessWidget {
             label: l10n.reminderDaysLabel,
             value: l10n.reminderDaysOption(commitment.reminderDaysBefore!),
           ),
+        _DetailTile(
+          label: l10n.paymentMethodLabel,
+          value: Formatters.paymentMethodLabel(commitment.paymentMethod, l10n),
+        ),
+        if (commitment.paymentSourceLabel != null &&
+            commitment.paymentSourceLabel!.trim().isNotEmpty)
+          _DetailTile(label: l10n.paymentSourceLabel, value: commitment.paymentSourceLabel!),
+        if (commitment.hasForeignCurrency) ...[
+          if (commitment.exchangeRate != null)
+            _DetailTile(
+              label: l10n.exchangeRateLabel,
+              value: commitment.exchangeRate!.toStringAsFixed(4),
+            ),
+          _DetailTile(
+            label: l10n.estimatedReportingAmountLabel,
+            value: Formatters.money(
+              commitment.estimatedReportingAmount,
+              commitment.reportingCurrency,
+              locale,
+            ),
+          ),
+        ],
         if (commitment.notes != null && commitment.notes!.isNotEmpty)
           _DetailTile(label: l10n.notesLabel, value: commitment.notes!),
         if (commitment.isPaused)

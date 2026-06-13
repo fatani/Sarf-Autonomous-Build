@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sarf/app/providers.dart';
 import 'package:sarf/core/domain/models.dart';
+import 'package:sarf/core/utils/commitment_currency.dart';
 import 'package:sarf/core/utils/locale_utils.dart';
 import 'package:uuid/uuid.dart';
 
@@ -18,25 +19,38 @@ class CommitmentActions {
 
   Future<CommitmentModel> createFromInput({
     required CommitmentModel draft,
+    double? exchangeRate,
   }) async {
+    final settings = await _ref.read(settingsProvider.future);
     final now = DateTime.now().toUtc();
+    final normalized = CommitmentCurrency.normalize(
+      draft: draft,
+      reportingCurrency: settings.defaultCurrency,
+      exchangeRate: exchangeRate ?? draft.exchangeRate,
+    );
+
     final commitment = CommitmentModel(
-      id: draft.id.isEmpty ? _uuid.v4() : draft.id,
-      name: draft.name,
-      amount: draft.amount,
-      currency: draft.currency,
-      billingCycle: draft.billingCycle,
-      category: draft.category,
-      nextDueDate: draft.nextDueDate,
-      reminderDaysBefore: draft.reminderDaysBefore,
-      notes: draft.notes,
-      templateId: draft.templateId,
-      isPaused: draft.isPaused,
-      deletedAt: draft.deletedAt,
+      id: normalized.id.isEmpty ? _uuid.v4() : normalized.id,
+      name: normalized.name,
+      amount: normalized.amount,
+      currency: normalized.currency,
+      billingCycle: normalized.billingCycle,
+      category: normalized.category,
+      nextDueDate: normalized.nextDueDate,
+      reminderDaysBefore: normalized.reminderDaysBefore,
+      notes: normalized.notes,
+      templateId: normalized.templateId,
+      isPaused: normalized.isPaused,
+      deletedAt: normalized.deletedAt,
       createdAt: draft.createdAt == DateTime.fromMillisecondsSinceEpoch(0)
           ? now
           : draft.createdAt,
       updatedAt: now,
+      reportingCurrency: normalized.reportingCurrency,
+      estimatedReportingAmount: normalized.estimatedReportingAmount,
+      exchangeRate: normalized.exchangeRate,
+      paymentMethod: normalized.paymentMethod,
+      paymentSourceLabel: normalized.paymentSourceLabel,
     );
     await save(commitment);
     return commitment;

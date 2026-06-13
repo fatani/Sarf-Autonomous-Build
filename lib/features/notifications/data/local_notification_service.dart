@@ -192,7 +192,7 @@ class LocalNotificationService {
       return days >= 0 && days <= AppConstants.upcomingPaymentsWindowDays;
     }).toList();
 
-    final total = upcoming.fold<double>(0, (sum, c) => sum + c.amount);
+    final total = upcoming.fold<double>(0, (sum, c) => sum + c.estimatedReportingAmount);
 
     try {
       await _plugin.zonedSchedule(

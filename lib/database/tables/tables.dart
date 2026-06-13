@@ -15,6 +15,11 @@ class Commitments extends Table {
   DateTimeColumn get deletedAt => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
+  TextColumn get reportingCurrency => text().withDefault(const Constant('SAR'))();
+  RealColumn get estimatedReportingAmount => real().withDefault(const Constant(0))();
+  RealColumn get exchangeRate => real().nullable()();
+  TextColumn get paymentMethod => text().withDefault(const Constant('card'))();
+  TextColumn get paymentSourceLabel => text().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};
@@ -29,6 +34,7 @@ class ServiceTemplates extends Table {
   TextColumn get defaultBillingCycle => text()();
   TextColumn get iconName => text().withDefault(const Constant('receipt_long'))();
   BoolColumn get isBuiltIn => boolean().withDefault(const Constant(true))();
+  TextColumn get defaultCurrency => text().nullable()();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

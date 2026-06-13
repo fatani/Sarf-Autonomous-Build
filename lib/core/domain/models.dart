@@ -16,11 +16,20 @@ class CommitmentModel {
     this.deletedAt,
     required this.createdAt,
     required this.updatedAt,
+    required this.reportingCurrency,
+    required this.estimatedReportingAmount,
+    this.exchangeRate,
+    this.paymentMethod = PaymentMethod.card,
+    this.paymentSourceLabel,
   });
 
   final String id;
   final String name;
+
+  /// Original subscription amount (same as [originalAmount]).
   final double amount;
+
+  /// Original subscription currency (same as [originalCurrency]).
   final String currency;
   final BillingCycle billingCycle;
   final CommitmentCategory category;
@@ -32,9 +41,18 @@ class CommitmentModel {
   final DateTime? deletedAt;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String reportingCurrency;
+  final double estimatedReportingAmount;
+  final double? exchangeRate;
+  final PaymentMethod paymentMethod;
+  final String? paymentSourceLabel;
+
+  double get originalAmount => amount;
+  String get originalCurrency => currency;
 
   bool get isDeleted => deletedAt != null;
   bool get isActive => !isDeleted && !isPaused;
+  bool get hasForeignCurrency => currency != reportingCurrency;
 
   CommitmentModel copyWith({
     String? name,
@@ -49,6 +67,11 @@ class CommitmentModel {
     bool? isPaused,
     DateTime? Function()? deletedAt,
     DateTime? updatedAt,
+    String? reportingCurrency,
+    double? estimatedReportingAmount,
+    double? Function()? exchangeRate,
+    PaymentMethod? paymentMethod,
+    String? Function()? paymentSourceLabel,
   }) {
     return CommitmentModel(
       id: id,
@@ -66,6 +89,12 @@ class CommitmentModel {
       deletedAt: deletedAt != null ? deletedAt() : this.deletedAt,
       createdAt: createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      reportingCurrency: reportingCurrency ?? this.reportingCurrency,
+      estimatedReportingAmount: estimatedReportingAmount ?? this.estimatedReportingAmount,
+      exchangeRate: exchangeRate != null ? exchangeRate() : this.exchangeRate,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      paymentSourceLabel:
+          paymentSourceLabel != null ? paymentSourceLabel() : this.paymentSourceLabel,
     );
   }
 }
@@ -80,6 +109,7 @@ class ServiceTemplateModel {
     required this.defaultBillingCycle,
     required this.iconName,
     this.isBuiltIn = true,
+    this.defaultCurrency,
   });
 
   final String id;
@@ -90,6 +120,7 @@ class ServiceTemplateModel {
   final BillingCycle defaultBillingCycle;
   final String iconName;
   final bool isBuiltIn;
+  final String? defaultCurrency;
 
   String localizedName(String languageCode) {
     return languageCode == 'ar' ? nameAr : nameEn;

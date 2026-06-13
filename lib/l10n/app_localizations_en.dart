@@ -396,4 +396,64 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get suggestedDefaultHint => 'Suggested default only';
+
+  @override
+  String get amountSectionTitle => 'Amount';
+
+  @override
+  String get paymentSectionTitle => 'Payment';
+
+  @override
+  String get exchangeRateLabel => 'Exchange rate';
+
+  @override
+  String exchangeRateHint(String originalCurrency, String reportingCurrency) {
+    return '1 $originalCurrency = ? $reportingCurrency';
+  }
+
+  @override
+  String get invalidExchangeRate => 'Enter a valid exchange rate';
+
+  @override
+  String estimatedReportingAmount(String amount) {
+    return 'Estimated: $amount';
+  }
+
+  @override
+  String get estimatedReportingAmountLabel => 'Estimated in reporting currency';
+
+  @override
+  String get paymentMethodLabel => 'Payment method';
+
+  @override
+  String get paymentMethodCard => 'Card';
+
+  @override
+  String get paymentMethodMada => 'Mada';
+
+  @override
+  String get paymentMethodApplePay => 'Apple Pay';
+
+  @override
+  String get paymentMethodBankTransfer => 'Bank transfer';
+
+  @override
+  String get paymentMethodCash => 'Cash';
+
+  @override
+  String get paymentMethodOther => 'Other';
+
+  @override
+  String get paymentSourceLabel => 'Payment source';
+
+  @override
+  String get paymentSourceHint => 'Optional — e.g. Al Rajhi Visa';
+
+  @override
+  String get amountApprox => '≈';
+
+  @override
+  String paidBy(String source) {
+    return 'Paid by: $source';
+  }
 }

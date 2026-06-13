@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:sarf/core/constants/app_constants.dart';
 import 'package:sarf/core/domain/enums.dart';
 import 'package:sarf/core/domain/models.dart';
+import 'package:sarf/core/utils/commitment_currency.dart';
 import 'package:sarf/features/shared/data/repositories.dart';
 
 enum BackupImportResult {
@@ -103,6 +104,11 @@ class BackupService {
         'name': c.name,
         'amount': c.amount,
         'currency': c.currency,
+        'reportingCurrency': c.reportingCurrency,
+        'estimatedReportingAmount': c.estimatedReportingAmount,
+        if (c.exchangeRate != null) 'exchangeRate': c.exchangeRate,
+        'paymentMethod': c.paymentMethod.storageKey,
+        if (c.paymentSourceLabel != null) 'paymentSourceLabel': c.paymentSourceLabel,
         'billingCycle': c.billingCycle.storageKey,
         'category': c.category.storageKey,
         'nextDueDate': c.nextDueDate.toUtc().toIso8601String(),
@@ -116,7 +122,8 @@ class BackupService {
       };
 
   CommitmentModel _commitmentFromJson(Map<String, dynamic> json) {
-    return CommitmentModel(
+    return CommitmentCurrency.fromLegacyJsonFields(
+      json: json,
       id: json['id'] as String,
       name: json['name'] as String,
       amount: (json['amount'] as num).toDouble(),
@@ -145,6 +152,7 @@ class BackupService {
         'defaultBillingCycle': t.defaultBillingCycle.storageKey,
         'iconName': t.iconName,
         'isBuiltIn': t.isBuiltIn,
+        if (t.defaultCurrency != null) 'defaultCurrency': t.defaultCurrency,
       };
 
   ServiceTemplateModel _templateFromJson(Map<String, dynamic> json) {
@@ -158,6 +166,7 @@ class BackupService {
           BillingCycle.fromStorage(json['defaultBillingCycle'] as String),
       iconName: json['iconName'] as String? ?? 'receipt_long',
       isBuiltIn: json['isBuiltIn'] as bool? ?? false,
+      defaultCurrency: json['defaultCurrency'] as String?,
     );
   }
 

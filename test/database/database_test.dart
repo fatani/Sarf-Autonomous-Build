@@ -6,28 +6,13 @@ import 'package:sarf/core/domain/models.dart';
 import 'package:sarf/database/app_database.dart';
 import 'package:sarf/features/shared/data/repositories.dart';
 import 'package:sarf/features/templates/data/template_seed.dart';
+import '../test_helpers.dart';
 
 AppDatabase _memoryDb() => AppDatabase(NativeDatabase.memory());
 
-CommitmentModel _sampleCommitment({String id = 'c1'}) {
-  final now = DateTime.utc(2026, 1, 1);
-  return CommitmentModel(
-    id: id,
-    name: 'Netflix',
-    amount: 49,
-    currency: 'SAR',
-    billingCycle: BillingCycle.monthly,
-    category: CommitmentCategory.entertainment,
-    nextDueDate: DateTime.utc(2026, 1, 15),
-    reminderDaysBefore: 3,
-    createdAt: now,
-    updatedAt: now,
-  );
-}
-
 void main() {
   group('AppDatabase', () {
-    test('schemaVersion is 3', () {
+    test('schemaVersion is 4', () {
       final db = _memoryDb();
       addTearDown(db.close);
       expect(db.schemaVersion, AppConstants.schemaVersion);
@@ -46,7 +31,7 @@ void main() {
       final db = _memoryDb();
       addTearDown(db.close);
       final repository = CommitmentRepository(db);
-      final commitment = _sampleCommitment();
+      final commitment = testCommitment(name: 'Netflix');
 
       await repository.upsert(commitment);
       final loaded = await repository.getCommitment('c1');
@@ -64,12 +49,62 @@ void main() {
       final db = _memoryDb();
       addTearDown(db.close);
       final repository = CommitmentRepository(db);
-      await repository.upsert(_sampleCommitment());
+      await repository.upsert(testCommitment(name: 'Netflix'));
       await repository.softDelete('c1');
       await repository.restore('c1');
 
       final active = await repository.getActiveCommitments();
       expect(active, hasLength(1));
+    });
+
+    test('persists SAR commitment with payment fields', () async {
+      final db = _memoryDb();
+      addTearDown(db.close);
+      final repository = CommitmentRepository(db);
+      final commitment = testCommitment(
+        id: 'sar-1',
+        name: 'Netflix',
+        amount: 49.99,
+        currency: 'SAR',
+        paymentMethod: PaymentMethod.mada,
+        paymentSourceLabel: 'Al Rajhi Mada',
+      );
+
+      await repository.upsert(commitment);
+      final loaded = await repository.getCommitment('sar-1');
+
+      expect(loaded?.amount, 49.99);
+      expect(loaded?.currency, 'SAR');
+      expect(loaded?.reportingCurrency, 'SAR');
+      expect(loaded?.estimatedReportingAmount, 49.99);
+      expect(loaded?.paymentMethod, PaymentMethod.mada);
+      expect(loaded?.paymentSourceLabel, 'Al Rajhi Mada');
+    });
+
+    test('persists USD commitment with conversion fields', () async {
+      final db = _memoryDb();
+      addTearDown(db.close);
+      final repository = CommitmentRepository(db);
+      final commitment = testCommitment(
+        id: 'usd-1',
+        name: 'ChatGPT',
+        amount: 20,
+        currency: 'USD',
+        reportingCurrency: 'SAR',
+        estimatedReportingAmount: 75,
+        exchangeRate: 3.75,
+        paymentMethod: PaymentMethod.card,
+        paymentSourceLabel: 'Al Rajhi Visa',
+      );
+
+      await repository.upsert(commitment);
+      final loaded = await repository.getCommitment('usd-1');
+
+      expect(loaded?.currency, 'USD');
+      expect(loaded?.reportingCurrency, 'SAR');
+      expect(loaded?.estimatedReportingAmount, 75);
+      expect(loaded?.exchangeRate, 3.75);
+      expect(loaded?.paymentSourceLabel, 'Al Rajhi Visa');
     });
   });
 
@@ -83,6 +118,7 @@ void main() {
       final templates = await repository.getTemplates();
       expect(templates.length, AppConstants.builtInTemplateCount);
       expect(templates.any((t) => t.id == 'netflix'), isTrue);
+      expect(templates.firstWhere((t) => t.id == 'netflix').defaultCurrency, 'USD');
     });
   });
 

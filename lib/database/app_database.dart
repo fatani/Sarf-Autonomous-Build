@@ -57,6 +57,21 @@ class AppDatabase extends _$AppDatabase {
               "UPDATE service_templates SET category = 'other' WHERE category IN ('rent', 'finance')",
             );
           }
+          if (from < 4) {
+            await m.addColumn(commitments, commitments.reportingCurrency);
+            await m.addColumn(commitments, commitments.estimatedReportingAmount);
+            await m.addColumn(commitments, commitments.exchangeRate);
+            await m.addColumn(commitments, commitments.paymentMethod);
+            await m.addColumn(commitments, commitments.paymentSourceLabel);
+            await customStatement('''
+              UPDATE commitments SET
+                reporting_currency = '${AppConstants.defaultCurrency}',
+                estimated_reporting_amount = amount,
+                exchange_rate = 1.0,
+                payment_method = 'card'
+            ''');
+            await m.addColumn(serviceTemplates, serviceTemplates.defaultCurrency);
+          }
           await into(schemaMeta).insertOnConflictUpdate(
             SchemaMetaCompanion(
               version: Value(to),

@@ -823,6 +823,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Suggested default only'**
   String get suggestedDefaultHint;
+
+  /// No description provided for @amountSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amountSectionTitle;
+
+  /// No description provided for @paymentSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentSectionTitle;
+
+  /// No description provided for @exchangeRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange rate'**
+  String get exchangeRateLabel;
+
+  /// No description provided for @exchangeRateHint.
+  ///
+  /// In en, this message translates to:
+  /// **'1 {originalCurrency} = ? {reportingCurrency}'**
+  String exchangeRateHint(String originalCurrency, String reportingCurrency);
+
+  /// No description provided for @invalidExchangeRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid exchange rate'**
+  String get invalidExchangeRate;
+
+  /// No description provided for @estimatedReportingAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated: {amount}'**
+  String estimatedReportingAmount(String amount);
+
+  /// No description provided for @estimatedReportingAmountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated in reporting currency'**
+  String get estimatedReportingAmountLabel;
+
+  /// No description provided for @paymentMethodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method'**
+  String get paymentMethodLabel;
+
+  /// No description provided for @paymentMethodCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Card'**
+  String get paymentMethodCard;
+
+  /// No description provided for @paymentMethodMada.
+  ///
+  /// In en, this message translates to:
+  /// **'Mada'**
+  String get paymentMethodMada;
+
+  /// No description provided for @paymentMethodApplePay.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Pay'**
+  String get paymentMethodApplePay;
+
+  /// No description provided for @paymentMethodBankTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank transfer'**
+  String get paymentMethodBankTransfer;
+
+  /// No description provided for @paymentMethodCash.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get paymentMethodCash;
+
+  /// No description provided for @paymentMethodOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get paymentMethodOther;
+
+  /// No description provided for @paymentSourceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment source'**
+  String get paymentSourceLabel;
+
+  /// No description provided for @paymentSourceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional — e.g. Al Rajhi Visa'**
+  String get paymentSourceHint;
+
+  /// No description provided for @amountApprox.
+  ///
+  /// In en, this message translates to:
+  /// **'≈'**
+  String get amountApprox;
+
+  /// No description provided for @paidBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid by: {source}'**
+  String paidBy(String source);
 }
 
 class _AppLocalizationsDelegate

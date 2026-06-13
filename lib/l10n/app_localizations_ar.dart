@@ -395,4 +395,64 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get suggestedDefaultHint => 'قيمة افتراضية مقترحة فقط';
+
+  @override
+  String get amountSectionTitle => 'المبلغ';
+
+  @override
+  String get paymentSectionTitle => 'الدفع';
+
+  @override
+  String get exchangeRateLabel => 'سعر التحويل';
+
+  @override
+  String exchangeRateHint(String originalCurrency, String reportingCurrency) {
+    return '1 $originalCurrency = ? $reportingCurrency';
+  }
+
+  @override
+  String get invalidExchangeRate => 'أدخل سعر تحويل صالحًا';
+
+  @override
+  String estimatedReportingAmount(String amount) {
+    return 'المقدّر: $amount';
+  }
+
+  @override
+  String get estimatedReportingAmountLabel => 'المبلغ المقدّر بعملة التقرير';
+
+  @override
+  String get paymentMethodLabel => 'طريقة الدفع';
+
+  @override
+  String get paymentMethodCard => 'بطاقة';
+
+  @override
+  String get paymentMethodMada => 'مدى';
+
+  @override
+  String get paymentMethodApplePay => 'Apple Pay';
+
+  @override
+  String get paymentMethodBankTransfer => 'تحويل بنكي';
+
+  @override
+  String get paymentMethodCash => 'نقد';
+
+  @override
+  String get paymentMethodOther => 'أخرى';
+
+  @override
+  String get paymentSourceLabel => 'مصدر الدفع';
+
+  @override
+  String get paymentSourceHint => 'اختياري — مثال: بطاقة الراجحي Visa';
+
+  @override
+  String get amountApprox => '≈';
+
+  @override
+  String paidBy(String source) {
+    return 'الدفع: $source';
+  }
 }

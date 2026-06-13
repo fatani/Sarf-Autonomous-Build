@@ -49,6 +49,11 @@ class CommitmentRepository {
             deletedAt: Value(commitment.deletedAt),
             createdAt: Value(commitment.createdAt),
             updatedAt: Value(commitment.updatedAt),
+            reportingCurrency: Value(commitment.reportingCurrency),
+            estimatedReportingAmount: Value(commitment.estimatedReportingAmount),
+            exchangeRate: Value(commitment.exchangeRate),
+            paymentMethod: Value(commitment.paymentMethod.storageKey),
+            paymentSourceLabel: Value(commitment.paymentSourceLabel),
           ),
         );
   }
@@ -120,6 +125,11 @@ class CommitmentRepository {
                     deletedAt: Value(commitment.deletedAt),
                     createdAt: Value(commitment.createdAt),
                     updatedAt: Value(commitment.updatedAt),
+                    reportingCurrency: Value(commitment.reportingCurrency),
+                    estimatedReportingAmount: Value(commitment.estimatedReportingAmount),
+                    exchangeRate: Value(commitment.exchangeRate),
+                    paymentMethod: Value(commitment.paymentMethod.storageKey),
+                    paymentSourceLabel: Value(commitment.paymentSourceLabel),
                   ),
                 )
                 .toList(),
@@ -130,6 +140,11 @@ class CommitmentRepository {
   }
 
   CommitmentModel _mapRow(Commitment row) {
+    final reportingCurrency = row.reportingCurrency;
+    final estimatedReportingAmount = row.estimatedReportingAmount == 0 && row.amount != 0
+        ? row.amount
+        : row.estimatedReportingAmount;
+
     return CommitmentModel(
       id: row.id,
       name: row.name,
@@ -145,6 +160,11 @@ class CommitmentRepository {
       deletedAt: row.deletedAt,
       createdAt: row.createdAt,
       updatedAt: row.updatedAt,
+      reportingCurrency: reportingCurrency,
+      estimatedReportingAmount: estimatedReportingAmount,
+      exchangeRate: row.exchangeRate ?? (row.currency == reportingCurrency ? 1.0 : null),
+      paymentMethod: PaymentMethod.fromStorage(row.paymentMethod),
+      paymentSourceLabel: row.paymentSourceLabel,
     );
   }
 }
@@ -302,6 +322,7 @@ class TemplateRepository {
       defaultBillingCycle: Value(template.defaultBillingCycle.storageKey),
       iconName: Value(template.iconName),
       isBuiltIn: Value(template.isBuiltIn),
+      defaultCurrency: Value(template.defaultCurrency),
     );
   }
 
@@ -315,6 +336,7 @@ class TemplateRepository {
       defaultBillingCycle: BillingCycle.fromStorage(row.defaultBillingCycle),
       iconName: row.iconName,
       isBuiltIn: row.isBuiltIn,
+      defaultCurrency: row.defaultCurrency,
     );
   }
 }

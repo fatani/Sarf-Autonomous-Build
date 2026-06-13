@@ -2,7 +2,8 @@
 class AppConstants {
   AppConstants._();
 
-  static const schemaVersion = 3;
+  static const schemaVersion = 4;
+  static const supportedCurrencies = ['SAR', 'USD', 'EUR', 'AED'];
   static const builtInTemplateCount = 115;
   static const backupExportVersion = 1;
   static const appName = 'Sarf';

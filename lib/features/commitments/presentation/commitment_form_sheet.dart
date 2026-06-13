@@ -4,6 +4,7 @@ import 'package:sarf/app/providers.dart';
 import 'package:sarf/core/constants/app_constants.dart';
 import 'package:sarf/core/domain/enums.dart';
 import 'package:sarf/core/domain/models.dart';
+import 'package:sarf/core/utils/commitment_currency.dart';
 import 'package:sarf/core/utils/formatters.dart';
 import 'package:sarf/features/commitments/application/commitment_actions.dart';
 import 'package:sarf/l10n/app_localizations.dart';
@@ -26,12 +27,15 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _amountController;
+  late final TextEditingController _exchangeRateController;
+  late final TextEditingController _paymentSourceController;
   late final TextEditingController _notesController;
   late BillingCycle _billingCycle;
   late CommitmentCategory _category;
   late DateTime _nextDueDate;
   int? _reminderDaysBefore;
   late String _currency;
+  late PaymentMethod _paymentMethod;
   var _currencyInitialized = false;
 
   @override
@@ -44,20 +48,61 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
       text: existing?.amount.toString() ??
           (template?.defaultAmount?.toString() ?? ''),
     );
+    _exchangeRateController = TextEditingController(
+      text: existing?.exchangeRate?.toString() ?? '',
+    );
+    _paymentSourceController = TextEditingController(
+      text: existing?.paymentSourceLabel ?? '',
+    );
     _notesController = TextEditingController(text: existing?.notes ?? '');
     _billingCycle = existing?.billingCycle ?? template?.defaultBillingCycle ?? BillingCycle.monthly;
     _category = existing?.category ?? template?.category ?? CommitmentCategory.other;
     _nextDueDate = existing?.nextDueDate ?? DateTime.now().add(const Duration(days: 30));
     _reminderDaysBefore = existing?.reminderDaysBefore ?? 3;
-    _currency = existing?.currency ?? AppConstants.defaultCurrency;
+    _currency = existing?.currency ??
+        template?.defaultCurrency ??
+        AppConstants.defaultCurrency;
+    _paymentMethod = existing?.paymentMethod ?? PaymentMethod.card;
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _amountController.dispose();
+    _exchangeRateController.dispose();
+    _paymentSourceController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  String get _reportingCurrency {
+    return ref.read(settingsProvider).valueOrNull?.defaultCurrency ??
+        AppConstants.defaultCurrency;
+  }
+
+  bool get _needsConversion =>
+      CommitmentCurrency.needsConversion(_currency, _reportingCurrency);
+
+  double? get _parsedAmount => double.tryParse(_amountController.text.trim());
+
+  double? get _parsedExchangeRate {
+    if (!_needsConversion) {
+      return 1.0;
+    }
+    return double.tryParse(_exchangeRateController.text.trim());
+  }
+
+  double? get _estimatedReportingAmount {
+    final amount = _parsedAmount;
+    if (amount == null) {
+      return null;
+    }
+    return CommitmentCurrency.computeEstimatedReportingAmount(
+      originalAmount: amount,
+      originalCurrency: _currency,
+      reportingCurrency: _reportingCurrency,
+      exchangeRate: _parsedExchangeRate,
+    );
   }
 
   @override
@@ -65,9 +110,10 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
     final l10n = AppLocalizations.of(context);
     final isEditing = widget.existing != null;
     final settings = ref.watch(settingsProvider);
+    final locale = Localizations.localeOf(context);
 
     settings.whenData((value) {
-      if (!_currencyInitialized && widget.existing == null) {
+      if (!_currencyInitialized && widget.existing == null && widget.template == null) {
         _currency = value.defaultCurrency;
         _currencyInitialized = true;
       }
@@ -94,13 +140,13 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
                     value == null || value.trim().isEmpty ? l10n.fieldRequired : null,
               ),
               const SizedBox(height: 12),
+              Text(l10n.amountSectionTitle, style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 8),
               TextFormField(
                 controller: _amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                decoration: InputDecoration(
-                  labelText: l10n.amountLabel,
-                  suffixText: _currency,
-                ),
+                decoration: InputDecoration(labelText: l10n.amountLabel),
+                onChanged: (_) => setState(() {}),
                 validator: (value) {
                   final parsed = double.tryParse(value ?? '');
                   if (parsed == null || parsed <= 0) {
@@ -110,6 +156,86 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
                 },
               ),
               const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                key: ValueKey(_currency),
+                initialValue: _currency,
+                decoration: InputDecoration(labelText: l10n.currencyLabel),
+                items: AppConstants.supportedCurrencies
+                    .map(
+                      (code) => DropdownMenuItem(
+                        value: code,
+                        child: Text(code),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _currency = value);
+                  }
+                },
+              ),
+              if (_needsConversion) ...[
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _exchangeRateController,
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  decoration: InputDecoration(
+                    labelText: l10n.exchangeRateLabel,
+                    helperText: l10n.exchangeRateHint(_reportingCurrency, _currency),
+                  ),
+                  onChanged: (_) => setState(() {}),
+                  validator: (value) {
+                    if (!_needsConversion) {
+                      return null;
+                    }
+                    final parsed = double.tryParse(value ?? '');
+                    if (parsed == null || parsed <= 0) {
+                      return l10n.invalidExchangeRate;
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 8),
+                if (_estimatedReportingAmount != null)
+                  Text(
+                    l10n.estimatedReportingAmount(
+                      Formatters.money(_estimatedReportingAmount!, _reportingCurrency, locale),
+                    ),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                  ),
+              ],
+              const SizedBox(height: 16),
+              Text(l10n.paymentSectionTitle, style: Theme.of(context).textTheme.titleSmall),
+              const SizedBox(height: 8),
+              DropdownButtonFormField<PaymentMethod>(
+                key: ValueKey(_paymentMethod),
+                initialValue: _paymentMethod,
+                decoration: InputDecoration(labelText: l10n.paymentMethodLabel),
+                items: PaymentMethod.values
+                    .map(
+                      (method) => DropdownMenuItem(
+                        value: method,
+                        child: Text(Formatters.paymentMethodLabel(method, l10n)),
+                      ),
+                    )
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _paymentMethod = value);
+                  }
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _paymentSourceController,
+                decoration: InputDecoration(
+                  labelText: l10n.paymentSourceLabel,
+                  hintText: l10n.paymentSourceHint,
+                ),
+              ),
+              const SizedBox(height: 16),
               DropdownButtonFormField<BillingCycle>(
                 initialValue: _billingCycle,
                 decoration: InputDecoration(labelText: l10n.billingCycleLabel),
@@ -149,7 +275,7 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
               ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(l10n.nextDueDateLabel),
-                subtitle: Text(Formatters.date(_nextDueDate, Localizations.localeOf(context))),
+                subtitle: Text(Formatters.date(_nextDueDate, locale)),
                 trailing: const Icon(Icons.calendar_today_outlined),
                 onTap: () async {
                   final picked = await showDatePicker(
@@ -214,6 +340,7 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
     }
 
     final existing = widget.existing;
+    final paymentSource = _paymentSourceController.text.trim();
     final draft = CommitmentModel(
       id: existing?.id ?? '',
       name: _nameController.text.trim(),
@@ -229,9 +356,17 @@ class _CommitmentFormSheetState extends ConsumerState<CommitmentFormSheet> {
       deletedAt: existing?.deletedAt,
       createdAt: existing?.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
       updatedAt: existing?.updatedAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+      reportingCurrency: _reportingCurrency,
+      estimatedReportingAmount: _estimatedReportingAmount ?? double.parse(_amountController.text.trim()),
+      exchangeRate: _parsedExchangeRate,
+      paymentMethod: _paymentMethod,
+      paymentSourceLabel: paymentSource.isEmpty ? null : paymentSource,
     );
 
-    await ref.read(commitmentActionsProvider).createFromInput(draft: draft);
+    await ref.read(commitmentActionsProvider).createFromInput(
+          draft: draft,
+          exchangeRate: _parsedExchangeRate,
+        );
     if (mounted) {
       Navigator.pop(context);
     }

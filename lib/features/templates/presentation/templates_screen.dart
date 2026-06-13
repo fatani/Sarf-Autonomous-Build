@@ -111,7 +111,11 @@ class _TemplateTile extends StatelessWidget {
             Formatters.categoryLabel(template.category, l10n),
             Formatters.billingCycleLabel(template.defaultBillingCycle, l10n),
             if (template.defaultAmount != null)
-              Formatters.money(template.defaultAmount!, 'SAR', locale),
+              Formatters.money(
+                template.defaultAmount!,
+                template.defaultCurrency ?? 'SAR',
+                locale,
+              ),
           ].join(' · '),
         ),
         trailing: FilledButton.tonal(
